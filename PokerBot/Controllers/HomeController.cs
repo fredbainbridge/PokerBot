@@ -40,8 +40,6 @@ namespace PokerBot.Controllers
             SlackClient client = new SlackClient(url);
             string externalip = new System.Net.WebClient().DownloadString("http://bot.whatismyipaddress.com");            
             string gameUrl = "http://" + externalip + ":8087";
-            Console.WriteLine(externalip);//string message = "*" + DraftName + "*" + ": <" + PlayerName + "> made a selection and all boosters are on currently on <" + PassedToPlayerName + ">. ";
-            Console.WriteLine(_secrets.SlackURL());
             string message = "";
             if(Form["Event"] == "RingGameLeave") {
                 string TableName = Form["Name"];
@@ -51,7 +49,6 @@ namespace PokerBot.Controllers
 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has left the table. " + remainingSeatsMsg;
-                
             }
             if(Form["Event"] == "RingGameJoin") {
                 string TableName = Form["Name"];
@@ -68,10 +65,16 @@ namespace PokerBot.Controllers
                 
                 message = "A game has started! " + gameUrl;
             }
+            if(Form["Event"] == "Hand") {
+                Console.WriteLine("Tommy Like Wingie");
+            }
             if(!string.IsNullOrEmpty(message)) {
-                client.PostMessage(
-                    text: message
-                );
+                Console.WriteLine(message);
+                if(!_secrets.Silence()){
+                    client.PostMessage(
+                        text: message
+                    );
+                }
             }
             return Json(new EmptyResult());
         }

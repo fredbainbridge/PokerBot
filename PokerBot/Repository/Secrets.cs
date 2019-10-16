@@ -7,6 +7,7 @@ namespace PokerBot.Repository {
         public string ServerURL {get; set;}
         public string Password {get; set;}
         public string SlackURL {get; set;}
+        public bool Silence {get; set;}
     }
     public class Secrets : ISecrets {
         private Secret _secret;
@@ -27,6 +28,9 @@ namespace PokerBot.Repository {
         }
         public string SlackURL() {
             return _secret.SlackURL;
+        }
+        public bool Silence() {
+            return _secret.Silence;
         }
     }
 }

@@ -3,5 +3,6 @@ namespace PokerBot.Repository {
         string PokerURL();
         string Password();
         string SlackURL();
+        bool Silence();
     }
 }
