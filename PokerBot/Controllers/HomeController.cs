@@ -66,7 +66,14 @@ namespace PokerBot.Controllers
                 message = "A game has started! " + gameUrl;
             }
             if(Form["Event"] == "Hand") {
+                //a hand has completed.
+                //get the balances of each player
+                //Look for MoNsTeR PoT!
+                //Update table state
                 Console.WriteLine("Tommy Like Wingie");
+            }
+            if(Form["Event"] == "Balance") {
+                //update the table state with the new balanaces.
             }
             if(!string.IsNullOrEmpty(message)) {
                 Console.WriteLine(message);
