@@ -7,5 +7,6 @@ namespace PokerBot.Repository {
         RingGamesGet GetTable(string TableName);
         int OpenSeats(string TableName);
         string RemainingSeatsMessage(string TableName);
+        LogsHandHistory GetHandHistory(string HandID);
     }
 }

@@ -66,10 +66,41 @@ namespace PokerBot.Controllers
                 message = "A game has started! " + gameUrl;
             }
             if(Form["Event"] == "Hand") {
-                //a hand has completed.
-                //get the balances of each player
-                //Look for MoNsTeR PoT!
-                //Update table state
+                string Hand = Form["Hand"];
+                string Table = Form["Table"];
+                string TableName = Form["Name"];
+                //get the hand number.
+                //get the hand history
+                //determine if its a monster hand!!
+                LogsHandHistory hand = _pokerRepository.GetHandHistory(Hand);
+                foreach(string s in hand.Data) {
+                    if(s.Contains(" wins Pot (")) { //winner declaration
+                        //"Fred wins Pot (40)"
+                        int index1 = s.IndexOf(" wins Pot (");
+                        string player = s.Substring(0, index1);
+                        index1 = s.LastIndexOf(" wins Pot (") + 11;
+                        int index2 = s.LastIndexOf(")");;
+                        string winningAmountString = s.Substring(index1,index2 - index1);
+                        //"Seat 5: Fred (+20) [2d 3h] Won without Showdown"
+                        int winningAmountInt;
+                        bool success = Int32.TryParse(winningAmountString, out winningAmountInt);
+                        if(success) {
+                            string type = "";
+                            if(winningAmountInt > 50000) {
+                                type = "FUCKING HUGE";
+                            }
+                            else if(winningAmountInt > 20000) {
+                                type = "MONSTER";
+                            }
+                            if(!string.IsNullOrEmpty(type)) {
+                                string amount = String.Format("{0:n0}", winningAmountInt);
+                                message = player + " just won a " + type + " pot! (" + amount +")";
+                            }
+                            
+                        }
+                        
+                    }
+                }
                 Console.WriteLine("Tommy Like Wingie");
             }
             if(Form["Event"] == "Balance") {

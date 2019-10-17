@@ -23,6 +23,14 @@ public class PokerRepository : IPokerRepository {
         }
         return players;
     }
+    public LogsHandHistory GetHandHistory(string HandID) {
+        var client = new MaevenClient<LogsHandHistory>(_secrets.PokerURL(), _secrets.Password());
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "LogsHandHistory");
+        dict.Add("Hand", HandID);
+        var request = client.Post(dict);
+        return request;
+    }
     public RingGamesGet GetTable(string TableName) {
         var client = new MaevenClient<RingGamesGet>(_secrets.PokerURL(),_secrets.Password());
         Dictionary<string,string> dict = new Dictionary<string, string>();
