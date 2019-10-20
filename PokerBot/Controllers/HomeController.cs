@@ -17,11 +17,14 @@ namespace PokerBot.Controllers
         private readonly ILogger<HomeController> _logger;
         private IPokerRepository _pokerRepository;
         private ISecrets _secrets;
-        public HomeController(ILogger<HomeController> logger, IPokerRepository PokerRepository, ISecrets Secrets)
+        private ISlackClient _slackClient;
+        
+        public HomeController(ILogger<HomeController> logger, IPokerRepository PokerRepository, ISecrets Secrets, ISlackClient SlackClient)
         {
             _logger = logger;
             _pokerRepository = PokerRepository;
             _secrets = Secrets;
+            _slackClient = SlackClient;
         }
 
         public IActionResult Index()
@@ -36,8 +39,6 @@ namespace PokerBot.Controllers
         }
 
         public JsonResult Poker(IFormCollection Form) {
-            string url = _secrets.SlackURL();
-            SlackClient client = new SlackClient(url);
             string externalip = new System.Net.WebClient().DownloadString("http://bot.whatismyipaddress.com");            
             string gameUrl = "http://" + externalip + ":8087";
             string message = "";
@@ -56,8 +57,15 @@ namespace PokerBot.Controllers
                 string Amount = Form["Amount"];
                 string Time = Form["Time"];
                 
+                string remainingSeats = _pokerRepository.RemainingSeatsMessage(TableName);
+                int remainingSeatsInt;
+                bool success = int.TryParse(remainingSeats, out remainingSeatsInt);
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has sat down with $" + Amount + "! " + remainingSeatsMsg + gameUrl;
+                if(success && remainingSeatsInt == 6)
+                {
+                    _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
+                }
             }
             if(Form["Event"] == "RingGameStart") {
                 string TableName = Form["Name"];
@@ -101,7 +109,6 @@ namespace PokerBot.Controllers
                         
                     }
                 }
-                Console.WriteLine("Tommy Like Wingie");
             }
             if(Form["Event"] == "Balance") {
                 //update the table state with the new balanaces.
@@ -109,7 +116,7 @@ namespace PokerBot.Controllers
             if(!string.IsNullOrEmpty(message)) {
                 Console.WriteLine(message);
                 if(!_secrets.Silence()){
-                    client.PostMessage(
+                    _slackClient.PostMessage(
                         text: message
                     );
                 }

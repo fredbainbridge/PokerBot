@@ -14,10 +14,24 @@ namespace PokerBot.Controllers
 {
     public class SlackController : Controller
     {
+        private ISlackClient _slackClient;
+        public SlackController(ISlackClient SlackClient)
+        {
+            _slackClient = SlackClient;
+        }
+        [HttpPost]
         public IActionResult Index(string Payload)
         {
-            
+            _slackClient.PostMessage(
+                        text: "The server is up!"
+                    );
             return new EmptyResult();
+        }
+        [HttpGet]
+        public IActionResult Index()
+        {
+            
+            return View();
         }
     }
 }

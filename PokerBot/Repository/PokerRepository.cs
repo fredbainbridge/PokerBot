@@ -59,4 +59,15 @@ public class PokerRepository : IPokerRepository {
         }
         return remainingSeatsMsg;
     }
+
+    public void SendAdminMessage(string Message, string TableName)
+    {
+        var client = new MaevenClient<RingGamesMessage>(_secrets.PokerURL(), _secrets.Password());
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "RingGamesMessage");
+        dict.Add("Name", TableName);
+        dict.Add("Message", Message);
+        client.Post(dict);
+
+    }
 }

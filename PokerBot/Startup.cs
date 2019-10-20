@@ -27,6 +27,7 @@ namespace PokerBot
             services.AddControllersWithViews();
             services.AddScoped<ISecrets, Secrets>();
             services.AddScoped<IPokerRepository, PokerRepository>();
+            services.AddScoped<ISlackClient, SlackClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
