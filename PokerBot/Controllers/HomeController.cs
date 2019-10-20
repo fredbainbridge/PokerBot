@@ -18,13 +18,15 @@ namespace PokerBot.Controllers
         private IPokerRepository _pokerRepository;
         private ISecrets _secrets;
         private ISlackClient _slackClient;
+        private IGameState _gameState;
         
-        public HomeController(ILogger<HomeController> logger, IPokerRepository PokerRepository, ISecrets Secrets, ISlackClient SlackClient)
+        public HomeController(ILogger<HomeController> logger, IPokerRepository PokerRepository, ISecrets Secrets, ISlackClient SlackClient, IGameState GameState)
         {
             _logger = logger;
             _pokerRepository = PokerRepository;
             _secrets = Secrets;
             _slackClient = SlackClient;
+            _gameState = GameState;
         }
 
         public IActionResult Index()
@@ -39,8 +41,9 @@ namespace PokerBot.Controllers
         }
 
         public JsonResult Poker(IFormCollection Form) {
-            string externalip = new System.Net.WebClient().DownloadString("http://bot.whatismyipaddress.com");            
-            string gameUrl = "http://" + externalip + ":8087";
+            //string externalip = new System.Net.WebClient().DownloadString("http://bot.whatismyipaddress.com");            
+            //string gameUrl = "http://" + externalip + ":8087";
+            string gameUrl = "http://poker.hopto.org:8087";
             string message = "";
             if(Form["Event"] == "RingGameLeave") {
                 string TableName = Form["Name"];
@@ -70,8 +73,14 @@ namespace PokerBot.Controllers
             if(Form["Event"] == "RingGameStart") {
                 string TableName = Form["Name"];
                 string Time = Form["Time"];
-                
-                message = "A game has started! " + gameUrl;
+                TimeSpan ts = DateTime.Now - _gameState.LastGameStartAlert();
+                if(ts.TotalMinutes > 15)
+                {
+                    message = "A game has started! " + gameUrl;
+                    _gameState.SetLastGameStartAlert();
+                }
+                _gameState.SetGameStart();
+
             }
             if(Form["Event"] == "Hand") {
                 string Hand = Form["Hand"];
