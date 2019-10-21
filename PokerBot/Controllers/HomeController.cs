@@ -62,10 +62,10 @@ namespace PokerBot.Controllers
                 
                 string remainingSeats = _pokerRepository.RemainingSeatsMessage(TableName);
                 int remainingSeatsInt;
-                bool success = int.TryParse(remainingSeats, out remainingSeatsInt);
+                
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has sat down with $" + Amount + "! " + remainingSeatsMsg + gameUrl;
-                if(success && remainingSeatsInt == 6)
+                if(remainingSeats.Equals("6"))
                 {
                     _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
                 }
@@ -122,8 +122,21 @@ namespace PokerBot.Controllers
             if(Form["Event"] == "Balance") {
                 //update the table state with the new balanaces.
             }
-            if(!string.IsNullOrEmpty(message)) {
-                Console.WriteLine(message);
+            if (Form["Event"] == "Login")
+            {
+                string player = Form["Player"];
+                var tables = _pokerRepository.GetTable();
+                foreach(var t in tables)
+                {
+                    Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + player + "has logged in.");
+                    _pokerRepository.SendAdminMessage(player + " has logged on.", t.Name);
+                }
+                
+                //update the table state with the new balanaces.
+            }
+            
+            if (!string.IsNullOrEmpty(message)) {
+                Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + message);
                 if(!_secrets.Silence()){
                     _slackClient.PostMessage(
                         text: message
@@ -133,6 +146,12 @@ namespace PokerBot.Controllers
             return Json(new EmptyResult());
         }
 
+        public JsonResult AdminMessage(string Message)
+        {
+            string TableName = "10/20 No Limit ($1000 min buy in)";
+            _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
+            return Json(new EmptyResult());
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

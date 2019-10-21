@@ -2,6 +2,7 @@ using PokerBot.Repository;
 using PokerBot.Models;
 using PokerMavensAPI;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
@@ -31,15 +32,35 @@ public class PokerRepository : IPokerRepository {
         var request = client.Post(dict);
         return request;
     }
-    public RingGamesGet GetTable(string TableName) {
-        var client = new MaevenClient<RingGamesGet>(_secrets.PokerURL(),_secrets.Password());
-        Dictionary<string,string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "RingGamesGet");
-        dict.Add("Name", TableName);
-        return client.Post(dict);
+    public List<RingGamesGet> GetTable(string TableName = null) {
+        RingGamesList list = new RingGamesList();
+        if(string.IsNullOrEmpty(TableName)) {  //get all ring games
+            var clientGet = new MaevenClient<RingGamesList>(_secrets.PokerURL(), _secrets.Password());
+            Dictionary<string, string> dictGet = new Dictionary<string, string>();
+            dictGet.Add("Command", "RingGamesList"); 
+            dictGet.Add("Fields", "Name");
+            list = clientGet.Post(dictGet);
+        }
+        else
+        {
+            list.Name = new List<string>();
+            list.Name.Add(TableName);
+        }
+
+        var client = new MaevenClient<RingGamesGet>(_secrets.PokerURL(), _secrets.Password());
+        List<RingGamesGet> ringGames = new List<RingGamesGet>();
+        foreach(var l in list.Name)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Command", "RingGamesGet");
+            dict.Add("Name", l);
+            ringGames.Add(client.Post(dict));
+        }
+        return ringGames;
+        
     }
     public int OpenSeats(string TableName) {
-        string maxPlayers = GetTable(TableName).Seats;
+        string maxPlayers = GetTable(TableName).FirstOrDefault().Seats;
         int intMaxPlayers;
         System.Int32.TryParse(maxPlayers, out intMaxPlayers);
         int totalPlayers = GetSeatedPlayers(TableName).Count;        
