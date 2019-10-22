@@ -53,6 +53,7 @@ namespace PokerBot.Controllers
 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has left the table. " + remainingSeatsMsg;
+                _gameState.RemovePlayer(PlayerName);
             }
             if(Form["Event"] == "RingGameJoin") {
                 string TableName = Form["Name"];
@@ -61,7 +62,6 @@ namespace PokerBot.Controllers
                 string Time = Form["Time"];
                 
                 string remainingSeats = _pokerRepository.RemainingSeatsMessage(TableName);
-                int remainingSeatsInt;
                 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has sat down with $" + Amount + "! " + remainingSeatsMsg + gameUrl;
@@ -69,6 +69,10 @@ namespace PokerBot.Controllers
                 {
                     _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
                 }
+                Player p = new Player();
+                p.Name = PlayerName;
+                p.TimeSeated = DateTime.Now;
+                _gameState.AddPlayer(p);
             }
             if(Form["Event"] == "RingGameStart") {
                 string TableName = Form["Name"];
@@ -120,7 +124,28 @@ namespace PokerBot.Controllers
                 }
             }
             if(Form["Event"] == "Balance") {
-                //update the table state with the new balanaces.
+                string player = Form["Player"];
+                string source = Form["Source"];
+                string change = Form["Change"];
+                int changeInt = Int32.Parse(change);
+                if(changeInt < 0)
+                {
+                    //if they were seated more than 1 minute ago.
+                    Player p = _gameState.GetSeatedPlayer(player);
+                    if (p != null)
+                    {
+                        TimeSpan ts = DateTime.Now - p.TimeSeated;
+                        if (ts.TotalSeconds > 5)
+                        {
+                            string adminmessage = player + " added " + String.Format("{0:n0}",(changeInt * -1)) + " chips.";
+                            Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + adminmessage); 
+                            _pokerRepository.SendAdminMessage(adminmessage, source);
+                        }
+                    }
+                }
+                
+                //if they are not seated, do nothing.
+
             }
             if (Form["Event"] == "Login")
             {
@@ -128,8 +153,8 @@ namespace PokerBot.Controllers
                 var tables = _pokerRepository.GetTable();
                 foreach(var t in tables)
                 {
-                    Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + player + "has logged in.");
-                    _pokerRepository.SendAdminMessage(player + " has logged on.", t.Name);
+                    Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + player + " has logged in.");
+                    _pokerRepository.SendAdminMessage(player + " has logged in.", t.Name);
                 }
                 
                 //update the table state with the new balanaces.

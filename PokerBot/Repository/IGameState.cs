@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PokerBot.Models;
 
 namespace PokerBot.Repository
 {
@@ -11,6 +12,9 @@ namespace PokerBot.Repository
         DateTime LastGameStartAlert();
         void SetLastGameStartAlert();
         public void SetGameStart();
+        void RemovePlayer(string Name);
+        void AddPlayer(Player player);
+        Player GetSeatedPlayer(string Name);
 
     }
 }
