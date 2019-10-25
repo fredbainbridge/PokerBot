@@ -29,6 +29,8 @@ namespace PokerBot
             services.AddScoped<IPokerRepository, PokerRepository>();
             services.AddScoped<ISlackClient, SlackClient>();
             services.AddSingleton<IGameState, GameState>();
+            services.AddHostedService<ConsumeScopedBalance>();
+            services.AddScoped<IScopedBalance, ScopedBalance>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

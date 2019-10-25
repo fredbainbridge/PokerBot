@@ -9,6 +9,14 @@ public class PokerRepository : IPokerRepository {
     public PokerRepository(ISecrets Secrets) {
         _secrets = Secrets;
     }
+    public AccountsList GetAccounts()
+    {
+        var client = new MaevenClient<AccountsList>(_secrets.PokerURL(), _secrets.Password());
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "AccountsList");
+        dict.Add("Fields", "RealName,Balance");
+        return client.Post(dict);
+    }
     public List<Player> GetSeatedPlayers(string TableName) {
         var client = new MaevenClient<RingGamesPlaying>(_secrets.PokerURL(), _secrets.Password());
         Dictionary<string, string> dict = new Dictionary<string,string>();

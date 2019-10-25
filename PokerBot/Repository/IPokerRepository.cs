@@ -9,5 +9,6 @@ namespace PokerBot.Repository {
         string RemainingSeatsMessage(string TableName);
         LogsHandHistory GetHandHistory(string HandID);
         void SendAdminMessage(string Message, string TableName);
+        AccountsList GetAccounts();
     }
 }
