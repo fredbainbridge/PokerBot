@@ -9,7 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PokerBot.Repository;
-
+using PokerBot.Models;
+using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.EntityFrameworkCore;
 namespace PokerBot
 {
     public class Startup
@@ -31,6 +33,13 @@ namespace PokerBot
             services.AddSingleton<IGameState, GameState>();
             services.AddHostedService<ConsumeScopedBalance>();
             services.AddScoped<IScopedBalance, ScopedBalance>();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                services.AddDbContext<PokerDBContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("azureConnection")));
+            else
+                services.AddDbContext<PokerDBContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
