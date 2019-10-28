@@ -15,15 +15,20 @@ namespace PokerBot.Controllers
     public class SlackController : Controller
     {
         private ISlackClient _slackClient;
+        //private ISecrets _secrets;
+
         public SlackController(ISlackClient SlackClient)
         {
             _slackClient = SlackClient;
         }
         [HttpPost]
-        public IActionResult Index(string Payload)
+        public IActionResult Index(IFormCollection Form)
         {
-            _slackClient.PostMessage(
-                        text: "The server is up!"
+            string userID = Form["user_id"];
+            _slackClient.PostAPIMessage(
+                        text: "The server is up!",
+                        //username: userID,
+                        channel: userID
                     );
             return new EmptyResult();
         }

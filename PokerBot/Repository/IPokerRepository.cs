@@ -10,5 +10,6 @@ namespace PokerBot.Repository {
         LogsHandHistory GetHandHistory(string HandID);
         void SendAdminMessage(string Message, string TableName);
         AccountsList GetAccounts();
+        void SetPrimaryBalance(string Name, int Balance);
     }
 }

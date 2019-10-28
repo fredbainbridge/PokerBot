@@ -17,10 +17,12 @@ namespace PokerBot.Repository
     {
         private ISecrets _secrets;
         private IPokerRepository _pokerRepo;
+        private PokerDBContext _pokerDB;
 
-        public ScopedBalance(ISecrets secrets, IPokerRepository pokerRepository) {
+        public ScopedBalance(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext) {
             _secrets = secrets;
             _pokerRepo = pokerRepository;
+            _pokerDB = pokerDBContext;
         }
         public async Task DoWork(CancellationToken stoppingToken)
         {
@@ -52,6 +54,10 @@ namespace PokerBot.Repository
                             s.Date = DateTime.Today;
                             s.Name = accountList.RealName[i];
                             sessions.Add(s);
+                            _pokerDB.Sessions.Add(s);
+                            _pokerDB.SaveChanges();
+                            _pokerRepo.SetPrimaryBalance(accountList.Player[i], 100000);
+
                         }
                     }
                 }

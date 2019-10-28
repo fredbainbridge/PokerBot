@@ -163,7 +163,7 @@ namespace PokerBot.Controllers
             if (!string.IsNullOrEmpty(message)) {
                 Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + message);
                 if(!_secrets.Silence()){
-                    _slackClient.PostMessage(
+                    _slackClient.PostWebhookMessage(
                         text: message
                     );
                 }
