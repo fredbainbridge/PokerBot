@@ -66,7 +66,7 @@ namespace PokerBot.Repository
                     Console.WriteLine("A game is happening, balance changes will not be recorded.");
                 }
                 
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(14400000, stoppingToken);  //run every 4 hours
             }
         }
     }
