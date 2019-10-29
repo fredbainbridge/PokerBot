@@ -52,7 +52,9 @@ namespace PokerBot.Repository
                             Session s = new Session();
                             s.Chips = chips;
                             s.Date = DateTime.Today;
-                            s.Name = accountList.RealName[i];
+                            s.User = _pokerDB.User.Where(u => u.UserName.Equals(accountList.Player[i])).FirstOrDefault();
+                            
+                            //s.Name = accountList.RealName[i];
                             sessions.Add(s);
                             _pokerDB.Sessions.Add(s);
                             _pokerDB.SaveChanges();

@@ -3,55 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PokerBot.Models;
 
 namespace PokerBot.Migrations
 {
     [DbContext(typeof(PokerDBContext))]
-    partial class PokerDBContextModelSnapshot : ModelSnapshot
+    [Migration("20191028185422_User model")]
+    partial class Usermodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("PokerBot.Models.Payment", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Chips")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Confirmed")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateRequested")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PayeeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PayerID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Sent")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("PayeeID");
-
-                    b.HasIndex("PayerID");
-
-                    b.ToTable("Payment");
-                });
 
             modelBuilder.Entity("PokerBot.Models.Session", b =>
                 {
@@ -98,21 +66,6 @@ namespace PokerBot.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("User");
-                });
-
-            modelBuilder.Entity("PokerBot.Models.Payment", b =>
-                {
-                    b.HasOne("PokerBot.Models.User", "Payee")
-                        .WithMany("Payees")
-                        .HasForeignKey("PayeeID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PokerBot.Models.User", "Payer")
-                        .WithMany("Payers")
-                        .HasForeignKey("PayerID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PokerBot.Models.Session", b =>

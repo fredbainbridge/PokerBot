@@ -9,17 +9,21 @@ using Microsoft.AspNetCore.Http;
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json;
 using PokerMavensAPI;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace PokerBot.Controllers
 {
     public class SlackController : Controller
     {
         private ISlackClient _slackClient;
+        private PokerDBContext _pokerContext;
         //private ISecrets _secrets;
 
-        public SlackController(ISlackClient SlackClient)
+        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext)
         {
             _slackClient = SlackClient;
+            _pokerContext = pokerContext;
         }
         [HttpPost]
         public IActionResult Index(IFormCollection Form)
@@ -37,6 +41,19 @@ namespace PokerBot.Controllers
         {
             
             return View();
+        }
+        public IActionResult Balance(IFormCollection Form)
+        {
+            string userID = Form["user_id"];
+            User u = _pokerContext.User.Where(u => u.SlackID.Equals(userID)).FirstOrDefault();
+            UserBalance balance = _pokerContext.UserBalance.Where(b => b.UserID == u.ID).FirstOrDefault();
+            Console.WriteLine(u.RealName + " has requested their balance.");
+            string text = "Your balance is: " + balance.Balance;
+            _slackClient.PostAPIMessage(
+                text: text,
+                channel: userID
+                );
+            return new EmptyResult();
         }
     }
 }
