@@ -11,5 +11,7 @@ namespace PokerBot.Repository {
         void SendAdminMessage(string Message, string TableName);
         AccountsList GetAccounts();
         void SetPrimaryBalance(string Name, int Balance);
+        List<vSession> GetSessions(int? Top = null);
+        List<UserBalance> GetUserBalances();
     }
 }

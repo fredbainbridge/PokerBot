@@ -13,5 +13,6 @@ namespace PokerBot.Models
 
         public int Priority { get; set; }
         public string SlackID { get; set; }
+        public DateTime LastPlayed { get; set; }
     }
 }

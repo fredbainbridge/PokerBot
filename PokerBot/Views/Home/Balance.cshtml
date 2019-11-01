@@ -1,0 +1,27 @@
+﻿@using PokerBot.Models;
+@using System.Collections.Generic;
+@model List<UserBalance>
+@{
+    ViewData["Title"] = "Happies Poker";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Balances</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Balance</th>
+            <th>Priority</th>
+            <th>Last Played</th>
+        </tr>
+        @foreach(UserBalance b in Model)
+        {
+            <tr>
+                <td>@b.RealName</td>
+                <td>@b.Balance</td>
+                <td>@b.Priority</td>
+                <td>@b.LastPlayed.ToShortDateString()</td>
+            </tr>
+        }
+    </table>
+</div>

@@ -20,14 +20,14 @@ namespace PokerBot.Repository
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Consume Scoped Service Hosted Service running.");
+            //Console.WriteLine("Consume Scoped Service Hosted Service running.");
 
             await DoWork(stoppingToken);
         }
 
         private async Task DoWork(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Consume Scoped Service Hosted Service is working.");
+            //Console.WriteLine("Consume Scoped Service Hosted Service is working.");
 
             using (var scope = Services.CreateScope())
             {

@@ -43,16 +43,19 @@ namespace PokerBot.Repository
                 }
                 if(!gameOn)
                 {
+                    DateTime now = DateTime.Now;
                     AccountsList accountList = _pokerRepo.GetAccounts();
                     for (int i = 0; i < accountList.Accounts; i++) {
                         if(accountList.Balance[i] != "100000")
                         {
+                            User u = _pokerDB.User.Where(u => u.UserName.Equals(accountList.Player[i])).FirstOrDefault();
+                            Console.WriteLine("Recording session for " + u.RealName);
                             int balance = Int32.Parse(accountList.Balance[i]);
                             int chips = balance - 100000;
                             Session s = new Session();
                             s.Chips = chips;
-                            s.Date = DateTime.Today;
-                            s.User = _pokerDB.User.Where(u => u.UserName.Equals(accountList.Player[i])).FirstOrDefault();
+                            s.Date = now;
+                            s.User = u;
                             
                             //s.Name = accountList.RealName[i];
                             sessions.Add(s);
@@ -68,7 +71,7 @@ namespace PokerBot.Repository
                     Console.WriteLine("A game is happening, balance changes will not be recorded.");
                 }
                 
-                await Task.Delay(14400000, stoppingToken);  //run every 4 hours
+                await Task.Delay(3600000, stoppingToken);  //run every 1 hours
             }
         }
     }

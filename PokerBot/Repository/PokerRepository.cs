@@ -6,8 +6,18 @@ using System.Linq;
 
 public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
-    public PokerRepository(ISecrets Secrets) {
+    private PokerDBContext _pokerContext;
+    public PokerRepository(ISecrets Secrets, PokerDBContext PokerContext) {
         _secrets = Secrets;
+        _pokerContext = PokerContext;
+    }
+    public List<UserBalance> GetUserBalances()
+    {
+        return _pokerContext.UserBalance.ToList();
+    }
+    public List<vSession> GetSessions(int? Top = null)
+    {
+        return _pokerContext.vSession.Take(Top.HasValue ? Top.Value : int.MaxValue).ToList();
     }
     public void SetPrimaryBalance(string Name, int Balance)
     {

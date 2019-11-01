@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using PokerBot.Models;
 using System.Web;
 using Microsoft.AspNetCore.Http;
-using System.Runtime.Serialization.Json;
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 using PokerMavensAPI;
 
 namespace PokerBot.Controllers
@@ -31,10 +31,15 @@ namespace PokerBot.Controllers
 
         public IActionResult Index()
         {
-            
-            return View();
+            List<vSession> sessions = _pokerRepository.GetSessions();
+            return View(sessions.OrderByDescending(s => s.Date).ToList());
         }
 
+        public IActionResult Balance()
+        {
+            List<UserBalance> balances = _pokerRepository.GetUserBalances();
+            return View(balances.OrderByDescending(b => b.Priority).ToList());
+        }
         public IActionResult Privacy()
         {
             return View();

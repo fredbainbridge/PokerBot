@@ -17,13 +17,18 @@ namespace PokerBot.Models
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserBalance> UserBalance {get; set; }
         public virtual DbSet<Payment> Payment { get; set; }
-
+        public virtual DbSet<vSession> vSession { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserBalance>(entity =>
             {
                 entity.HasNoKey();
                 entity.ToView("v_Balances");
+            });
+            modelBuilder.Entity<vSession>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("v_Sessions");
             });
             modelBuilder.Entity<Payment>(entity =>
             {
