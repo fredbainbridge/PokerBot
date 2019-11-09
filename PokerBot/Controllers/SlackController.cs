@@ -267,7 +267,7 @@ namespace PokerBot.Controllers
             _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
             string message = "Poker account created!  UserName: " + Player + ". Password: password";
             _slackClient.PostAPIMessage(message, null, userID);
-            message = "Please change your password.";
+            message = "Please change your password using /changepw.";
             _slackClient.PostAPIMessage(message, null, userID);
             return new EmptyResult();
         }
