@@ -11,11 +11,19 @@ namespace PokerBot.Repository
         private DateTime _gameStart;
         private DateTime _lastGameStartAlert;
         private List<Player> _seatedPlayers;
-
+        private string _lastMessage;
         public GameState()
         {
             _lastGameStartAlert = DateTime.Now.AddMinutes(-15);
             _seatedPlayers = new List<Player>();
+        }
+        public void SetLastMessage(string message)
+        {
+            _lastMessage = message;
+        }
+        public string GetLastMessage()
+        {
+            return _lastMessage;
         }
         public DateTime GameStart()
         {

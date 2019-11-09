@@ -35,6 +35,10 @@ namespace PokerBot.Controllers
             return View(sessions.OrderByDescending(s => s.Date).ToList());
         }
 
+        public IActionResult Help()
+        {
+            return View();
+        }
         public IActionResult Balance()
         {
             List<UserBalance> balances = _pokerRepository.GetUserBalances();
@@ -70,7 +74,7 @@ namespace PokerBot.Controllers
                 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has sat down with $" + Amount + "! " + remainingSeatsMsg + gameUrl;
-                if(remainingSeats.Equals("6"))
+                if(remainingSeats.Equals("There are 6 seats remaining. "))
                 {
                     _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
                 }
@@ -85,8 +89,10 @@ namespace PokerBot.Controllers
                 TimeSpan ts = DateTime.Now - _gameState.LastGameStartAlert();
                 if(ts.TotalMinutes > 15)
                 {
-                    message = "A game has started! " + gameUrl;
-                    _gameState.SetLastGameStartAlert();
+                    if(!_gameState.GetLastMessage().Equals("A game has started! " + gameUrl)) {
+                        message = "A game has started! " + gameUrl;
+                        _gameState.SetLastGameStartAlert();
+                    }
                 }
                 _gameState.SetGameStart();
 
@@ -172,12 +178,13 @@ namespace PokerBot.Controllers
                         text: message
                     );
                 }
+                _gameState.SetLastMessage(message);
             }
             return Json(new EmptyResult());
         }
 
         public JsonResult AdminMessage(string Message)
-        {
+           {
             string TableName = "10/20 No Limit ($1000 min buy in)";
             _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
             return Json(new EmptyResult());

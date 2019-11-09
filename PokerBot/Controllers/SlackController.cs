@@ -1,17 +1,10 @@
 using System;
-using System.Diagnostics;
 using PokerBot.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PokerBot.Models;
-using System.Web;
 using Microsoft.AspNetCore.Http;
-using System.Runtime.Serialization.Json;
-using Newtonsoft.Json;
-using PokerMavensAPI;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+
 
 namespace PokerBot.Controllers
 {
@@ -19,12 +12,14 @@ namespace PokerBot.Controllers
     {
         private ISlackClient _slackClient;
         private PokerDBContext _pokerContext;
+        private IPokerRepository _pokerRepo;
         //private ISecrets _secrets;
 
-        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext)
+        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo)
         {
             _slackClient = SlackClient;
             _pokerContext = pokerContext;
+            _pokerRepo = PokerRepo;
         }
         [HttpPost]
         public IActionResult Index(IFormCollection Form)
@@ -211,6 +206,70 @@ namespace PokerBot.Controllers
             _slackClient.PostAPIMessage(toMessage, null, userID);
             return new EmptyResult();
             
+        }
+        public IActionResult ChangePassword(IFormCollection Form)
+        {
+            string userID = Form["user_id"];
+            string userName = Form["user_name"];
+            string text = Form["Text"];
+            bool success = _pokerRepo.ChangePassword(userID, text);
+            string message;
+            if(success)
+            {
+                message = "Password updated.";
+            }
+            else
+            {
+                message = "Failed to update password, user not found maybe? ";
+            }
+            _slackClient.PostAPIMessage(message, null, userID);
+            return new EmptyResult();
+        }
+        public IActionResult Register(IFormCollection Form)
+        {
+            
+            //params (optional): username, realname
+            string userID = Form["user_id"];
+            string userName = Form["user_name"];
+            User u = _pokerContext.User.Where(u => u.SlackID.Equals(userID)).FirstOrDefault();
+            if (u != null)
+            {
+                //account already exists.
+                string msg = "Account already exists.  UserName: " + u.UserName;
+                _slackClient.PostAPIMessage(msg, null, userID);
+                return new EmptyResult();
+            }
+
+            string Player = "";
+            string RealName = "";
+            
+            string text = Form["Text"];
+            if (!string.IsNullOrEmpty(text))
+            {
+                string[] parameters = text.Split(' ');
+                Player = parameters[0];
+                for (int i = 1; i < parameters.Length; i++)
+                {
+                    RealName += parameters[i];
+                }
+            }
+
+            string Location = "The internet";
+            string Email = "not@real.address";
+            if(string.IsNullOrEmpty(Player))
+            {
+                Player = userID;
+            }
+            if(string.IsNullOrEmpty(RealName))
+            {
+                RealName = userName;
+            }
+            _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
+            string message = "Poker account created!  UserName: " + Player + ". Password: password";
+            _slackClient.PostAPIMessage(message, null, userID);
+            message = "Please change your password.";
+            _slackClient.PostAPIMessage(message, null, userID);
+            return new EmptyResult();
         }
     }
 }

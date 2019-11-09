@@ -11,6 +11,45 @@ public class PokerRepository : IPokerRepository {
         _secrets = Secrets;
         _pokerContext = PokerContext;
     }
+    public bool ChangePassword(string SlackID, string password)
+    {
+        var client = new MaevenClient<AccountsEdit>(_secrets.PokerURL(), _secrets.Password());
+        User u = _pokerContext.User.Where(u => u.SlackID.Equals(SlackID)).FirstOrDefault();
+        if(u == null)
+        {
+            return false; 
+        }
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "AccountsEdit");
+        dict.Add("Player", u.UserName);
+        dict.Add("PW", password);
+        var response = client.Post(dict);
+        return true;
+    }
+    public User CreateNewUser(string SlackID, string Player, string RealName, string Location, string Email)
+    {
+        var client = new MaevenClient<AccountsAdd>(_secrets.PokerURL(), _secrets.Password());
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "AccountAdd");
+        dict.Add("Player", Player);
+        dict.Add("RealName", RealName);
+        dict.Add("PW", "password");
+        dict.Add("Location", Location);
+        dict.Add("Email", Email);
+        client.Post(dict);
+
+        User u = new User();
+        u.EmailAddress = Email;
+        u.RealName = RealName;
+        u.SlackID = SlackID;
+        u.UserName = Player;
+        _pokerContext.User.Add(u);
+        _pokerContext.SaveChanges();
+
+        
+        return u;
+
+    }
     public List<UserBalance> GetUserBalances()
     {
         return _pokerContext.UserBalance.ToList();

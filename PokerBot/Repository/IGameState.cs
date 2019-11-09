@@ -15,6 +15,8 @@ namespace PokerBot.Repository
         void RemovePlayer(string Name);
         void AddPlayer(Player player);
         Player GetSeatedPlayer(string Name);
+        void SetLastMessage(string message);
+        string GetLastMessage();
 
     }
 }
