@@ -30,13 +30,13 @@ public class PokerRepository : IPokerRepository {
     {
         var client = new MaevenClient<AccountsAdd>(_secrets.PokerURL(), _secrets.Password());
         Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "AccountAdd");
+        dict.Add("Command", "AccountsAdd");
         dict.Add("Player", Player);
         dict.Add("RealName", RealName);
         dict.Add("PW", "password");
         dict.Add("Location", Location);
         dict.Add("Email", Email);
-        client.Post(dict);
+        var response = client.Post(dict);
 
         User u = new User();
         u.EmailAddress = Email;

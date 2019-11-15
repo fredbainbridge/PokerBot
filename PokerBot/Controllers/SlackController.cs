@@ -258,13 +258,13 @@ namespace PokerBot.Controllers
             string Email = "not@real.address";
             if(string.IsNullOrEmpty(Player))
             {
-                Player = userID;
+                Player = userName;
             }
             if(string.IsNullOrEmpty(RealName))
             {
                 RealName = userName;
             }
-            _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
+           var response =  _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
             string message = "Poker account created!  UserName: " + Player + ". Password: password";
             _slackClient.PostAPIMessage(message, null, userID);
             message = "Please change your password using /changepw.";
