@@ -91,6 +91,47 @@ public class PokerRepository : IPokerRepository {
         }
         return players;
     }
+    public bool AnySeatedPlayers()
+    {
+        var client = new MaevenClient<TournamentsList>(_secrets.PokerURL(), _secrets.Password());
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "TournamentsList");
+        dict.Add("Fields", "Name");
+        var request = client.Post(dict);
+        if(request.Name != null)
+        {
+            for (int i = 0; i < request.Name.Count(); i++)
+            {
+                var tClient = new MaevenClient<TournamentsPlaying>(_secrets.PokerURL(), _secrets.Password());
+                dict = new Dictionary<string, string>();
+                dict.Add("Command", "TournamentsPlaying");
+                dict.Add("Name", request.Name[i]);
+                var tRequest = client.Post(dict);
+
+                if(tRequest.Name != null)
+                {
+                    return true;
+                }
+            }
+        }
+        
+        var rClient = new MaevenClient<RingGamesList>(_secrets.PokerURL(), _secrets.Password());
+        dict = new Dictionary<string, string>();
+        dict.Add("Command", "RingGamesList");
+        dict.Add("Fields", "Name");
+        request = client.Post(dict);
+        if(request.Name != null)
+        {
+            for (int i = 0; i < request.Name.Count(); i++)
+            {
+                if (GetSeatedPlayers(request.Name[i]).Count() > 0)
+                {
+                    return true;
+                }
+            }
+        }          
+        return false;
+    }
     public LogsHandHistory GetHandHistory(string HandID) {
         var client = new MaevenClient<LogsHandHistory>(_secrets.PokerURL(), _secrets.Password());
         Dictionary<string, string> dict = new Dictionary<string, string>();

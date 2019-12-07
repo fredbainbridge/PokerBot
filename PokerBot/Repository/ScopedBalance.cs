@@ -35,11 +35,7 @@ namespace PokerBot.Repository
                 List<RingGamesGet> tables = _pokerRepo.GetTable();
                 foreach(RingGamesGet t in tables)
                 {
-                    List<Player> seatedPlayers = _pokerRepo.GetSeatedPlayers(t.Name);
-                    if(seatedPlayers.Count() != 0)
-                    {
-                        gameOn = true;
-                    }
+                    gameOn = _pokerRepo.AnySeatedPlayers();
                 }
                 if(!gameOn)
                 {
@@ -71,7 +67,7 @@ namespace PokerBot.Repository
                     Console.WriteLine("A game is happening, balance changes will not be recorded.");
                 }
                 
-                await Task.Delay(3600000, stoppingToken);  //run every 1 hours
+                await Task.Delay(1800000, stoppingToken);  //run every 1 hours
             }
         }
     }
