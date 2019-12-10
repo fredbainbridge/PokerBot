@@ -24,5 +24,8 @@ namespace PokerBot.Models
 
         [InverseProperty("Payer")]
         public virtual ICollection<Payment> Payers { get; set; }
+
+        [InverseProperty("Winner")]
+        public virtual ICollection<Hand> Winners { get; set; }
     }
 }

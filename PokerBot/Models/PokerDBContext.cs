@@ -18,6 +18,7 @@ namespace PokerBot.Models
         public virtual DbSet<UserBalance> UserBalance {get; set; }
         public virtual DbSet<Payment> Payment { get; set; }
         public virtual DbSet<vSession> vSession { get; set; }
+        public virtual DbSet<Hand> Hand { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserBalance>(entity =>
@@ -34,6 +35,10 @@ namespace PokerBot.Models
             {
                 entity.HasOne(u => u.Payee).WithMany(user => user.Payees).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(u => u.Payer).WithMany(user => user.Payers).OnDelete(DeleteBehavior.NoAction);
+            });
+            modelBuilder.Entity<Hand>(entity =>
+            {
+                entity.HasOne(h => h.Winner).WithMany(user => user.Winners).OnDelete(DeleteBehavior.NoAction);
             });
             
         }

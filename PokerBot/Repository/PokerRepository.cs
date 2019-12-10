@@ -3,6 +3,7 @@ using PokerBot.Models;
 using PokerMavensAPI;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
@@ -132,13 +133,50 @@ public class PokerRepository : IPokerRepository {
         }          
         return false;
     }
-    public LogsHandHistory GetHandHistory(string HandID) {
+    public Hand GetHandHistory(string HandID) {
         var client = new MaevenClient<LogsHandHistory>(_secrets.PokerURL(), _secrets.Password());
         Dictionary<string, string> dict = new Dictionary<string, string>();
         dict.Add("Command", "LogsHandHistory");
         dict.Add("Hand", HandID);
         var request = client.Post(dict);
-        return request;
+        //"Hand #10001-1 - 2019-12-09 21:05:05",
+
+        Hand hand = new Hand();
+        
+        foreach(string s in request.Data)
+        {
+            hand.Data += s + "\n";
+            string s2;
+            if(s.StartsWith("Hand #"))
+            {
+                s2 = s.Replace("Hand #","");
+                int index = s2.IndexOf('-') + 3;
+                hand.Number = s2.Substring(0, index).Trim();
+            }
+
+            if (s.Contains(" wins Pot ("))
+            { //winner declaration
+              //"Fred wins Pot (40)"
+                int index1 = s.IndexOf(" wins Pot (");
+                string player = s.Substring(0, index1);
+                hand.Winner = _pokerContext.User.Where(u => u.UserName.Equals(player)).FirstOrDefault();
+
+                index1 = s.LastIndexOf(" wins Pot (") + 11;
+                int index2 = s.LastIndexOf(")"); ;
+                string winningAmountString = s.Substring(index1, index2 - index1);
+                
+                //"Seat 5: Fred (+20) [2d 3h] Won without Showdown"
+                int winningAmountInt;
+                bool success = Int32.TryParse(winningAmountString, out winningAmountInt);
+                if (success)
+                {
+                    hand.WinningAmount = winningAmountInt;
+                }
+            }
+        }
+        _pokerContext.Hand.Add(hand);
+        _pokerContext.SaveChanges();
+        return hand;
     }
     public List<RingGamesGet> GetTable(string TableName = null) {
         RingGamesList list = new RingGamesList();
