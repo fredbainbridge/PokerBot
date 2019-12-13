@@ -10,7 +10,7 @@ namespace PokerBot.Models
         }
         public int ID { get; set; }
         public string Number { get; set; }
-        public int WinnerID { get; set; }
+        public int? WinnerID { get; set; }
 
         [ForeignKey("WinnerID")]
         [InverseProperty("Winners")] 
