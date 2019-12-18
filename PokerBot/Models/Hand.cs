@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace PokerBot.Models
 {
@@ -17,5 +18,6 @@ namespace PokerBot.Models
         public User Winner { get; set; }
         public int WinningAmount { get; set; }
         public string Data { get; set; }
+        public DateTime? Date { get; set; }
     }
 }

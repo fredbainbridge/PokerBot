@@ -19,6 +19,7 @@ namespace PokerBot.Models
         public virtual DbSet<Payment> Payment { get; set; }
         public virtual DbSet<vSession> vSession { get; set; }
         public virtual DbSet<Hand> Hand { get; set; }
+        public virtual DbSet<vHand> vHand { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserBalance>(entity =>
@@ -30,6 +31,11 @@ namespace PokerBot.Models
             {
                 entity.HasNoKey();
                 entity.ToView("v_Sessions");
+            });
+            modelBuilder.Entity<vHand>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("v_Hands");
             });
             modelBuilder.Entity<Payment>(entity =>
             {

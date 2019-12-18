@@ -30,7 +30,7 @@ namespace PokerBot.Repository
             {
                 bool gameOn = false;
                 List<Session> sessions = new List<Session>();
-                Console.WriteLine("Scoped Processing Service is working");
+                //Console.WriteLine("Scoped Processing Service is working");
                 //is the table empty?
                 List<RingGamesGet> tables = _pokerRepo.GetTable();
                 foreach(RingGamesGet t in tables)

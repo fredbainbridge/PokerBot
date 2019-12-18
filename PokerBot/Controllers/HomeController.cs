@@ -44,6 +44,11 @@ namespace PokerBot.Controllers
             List<UserBalance> balances = _pokerRepository.GetUserBalances();
             return View(balances.OrderByDescending(b => b.Priority).ToList());
         }
+        public IActionResult Hands(string ID = null) {
+
+            List<vHand> hands = _pokerRepository.GetHands(ID);
+            return View(hands);
+        }
         public IActionResult Privacy()
         {
             return View();
@@ -105,11 +110,12 @@ namespace PokerBot.Controllers
                 //get the hand history
                 //determine if its a monster hand!!
                 Hand hand = _pokerRepository.GetHandHistory(Hand);
+                string handURL = gameUrl + "/Home/Hand/" + Hand;
                 string type = "";
 
                 if (hand.WinningAmount > 100000)
                 {
-                    message = "Something unspeakable has happened!";
+                    message = "Something unspeakable has happened! " + handURL;
                 }
                 else if (hand.WinningAmount > 50000)
                 {
@@ -122,7 +128,7 @@ namespace PokerBot.Controllers
                 if (!string.IsNullOrEmpty(type))
                 {
                     string amount = String.Format("{0:n0}", hand.WinningAmount);
-                    message = hand.Winner.UserName + " just won a " + type + " pot! (" + amount + ")";
+                    message = hand.Winner.UserName + " just won a " + type + " pot! (" + amount + ") " + handURL;
                 }                
             }
             if(Form["Event"] == "Balance") {
@@ -149,7 +155,7 @@ namespace PokerBot.Controllers
                 //if they are not seated, do nothing.
 
             }
-            if (Form["Event"] == "Login")
+            if(Form["Event"] == "Login")
             {
                 string player = Form["Player"];
                 var tables = _pokerRepository.GetTable();

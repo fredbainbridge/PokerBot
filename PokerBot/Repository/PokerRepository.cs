@@ -145,10 +145,23 @@ public class PokerRepository : IPokerRepository {
         
         foreach(string s in request.Data)
         {
+            if(s.Contains("** Summary **"))
+            {
+                break;
+            }
             hand.Data += s + "\n";
             string s2;
             if(s.StartsWith("Hand #"))
             {
+                
+                int i = s.IndexOf('-');
+                s2 = s.Substring(i + 1, s.Length - i - 1);
+                i = s2.IndexOf('-');
+                s2 = s2.Substring(i + 1, s.Length - i - 1);
+                s2 = s2.Trim();
+
+                hand.Date = DateTime.Parse(s2);
+                
                 s2 = s.Replace("Hand #","");
                 int index = s2.IndexOf('-') + 3;
                 hand.Number = s2.Substring(0, index).Trim();
@@ -236,5 +249,13 @@ public class PokerRepository : IPokerRepository {
         dict.Add("Message", Message);
         client.Post(dict);
 
+    }
+    public List<vHand> GetHands(string handID = null) 
+    {
+        if(!string.IsNullOrEmpty(handID))
+        {
+            return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).ToList();
+        }
+        return _pokerContext.vHand.OrderByDescending(h => h.Number).ToList();
     }
 }
