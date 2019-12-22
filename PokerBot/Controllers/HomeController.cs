@@ -44,9 +44,9 @@ namespace PokerBot.Controllers
             List<UserBalance> balances = _pokerRepository.GetUserBalances();
             return View(balances.OrderByDescending(b => b.Priority).ToList());
         }
-        public IActionResult Hands(string ID = null) {
-
-            List<vHand> hands = _pokerRepository.GetHands(ID);
+        public IActionResult Hands(string ID = null, int minSize = 0)
+        {
+            List<vHand> hands = _pokerRepository.GetHands(ID, minSize);
             return View(hands);
         }
         public IActionResult Privacy()

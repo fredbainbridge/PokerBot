@@ -16,6 +16,6 @@ namespace PokerBot.Repository {
         User CreateNewUser(string SlackID, string Player, string RealName, string Location, string Email);
         bool ChangePassword(string SlackID, string password);
         bool AnySeatedPlayers();
-        List<vHand> GetHands(string handID = null);
+        List<vHand> GetHands(string handID = null, int minSize = 0);
     }
 }

@@ -157,7 +157,7 @@ public class PokerRepository : IPokerRepository {
                 int i = s.IndexOf('-');
                 s2 = s.Substring(i + 1, s.Length - i - 1);
                 i = s2.IndexOf('-');
-                s2 = s2.Substring(i + 1, s.Length - i - 1);
+                s2 = s2.Substring(i + 1, s2.Length - i - 1);
                 s2 = s2.Trim();
 
                 hand.Date = DateTime.Parse(s2);
@@ -250,12 +250,16 @@ public class PokerRepository : IPokerRepository {
         client.Post(dict);
 
     }
-    public List<vHand> GetHands(string handID = null) 
+    public List<vHand> GetHands(string handID = null, int minSize = 0) 
     {
         if(!string.IsNullOrEmpty(handID))
         {
             return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).ToList();
         }
-        return _pokerContext.vHand.OrderByDescending(h => h.Number).ToList();
+        if(minSize != 0)
+        {
+            return _pokerContext.vHand.Where(h => h.Amount >= minSize).ToList();
+        }
+        return _pokerContext.vHand.OrderByDescending(h => h.Number).Take(1000).ToList();
     }
 }

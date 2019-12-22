@@ -3,7 +3,15 @@
 @{
     ViewData["Title"] = "Hands";
 }
-
+<script>
+    function minsize() {
+        var minsize = $('#minsizetext').val()
+        location.href = '/home/hands?id=&minSize=' + minsize
+    }
+</script>
+<label>Min. Pot Size</label>
+<input type="text" id="minsizetext" />
+<button name="sizeFilter" onclick="minsize()">Filter</button>
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +28,7 @@
                 @Html.DisplayNameFor(model => model.Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Data)
+                Details
             </th>
             <th></th>
         </tr>
