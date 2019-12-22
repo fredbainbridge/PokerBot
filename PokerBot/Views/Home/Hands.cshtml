@@ -6,11 +6,14 @@
 <script>
     function minsize() {
         var minsize = $('#minsizetext').val()
-        location.href = '/home/hands?id=&minSize=' + minsize
+        var winner = $('#winnertext').val()
+        location.href = '/home/hands?id=&minSize=' + minsize + '&winner=' + winner
     }
 </script>
 <label>Min. Pot Size</label>
-<input type="text" id="minsizetext" />
+<input type="text" id="minsizetext" value="@ViewBag.minSize"/>
+<label>Winner</label>
+<input type="text" id="winnertext" value="@ViewBag.winner"/>
 <button name="sizeFilter" onclick="minsize()">Filter</button>
 <table class="table">
     <thead>

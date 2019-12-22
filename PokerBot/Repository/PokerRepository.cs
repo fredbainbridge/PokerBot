@@ -250,15 +250,27 @@ public class PokerRepository : IPokerRepository {
         client.Post(dict);
 
     }
-    public List<vHand> GetHands(string handID = null, int minSize = 0) 
+    public List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null) 
     {
+        
+        if(!string.IsNullOrEmpty(winner))
+        {   
+            if(minSize != 0 )
+            {
+                return _pokerContext.vHand.Where(h => h.Amount >= minSize && h.Winner.Equals(winner)).OrderByDescending(h => h.Number).ToList();
+            }
+            else
+            {
+                return _pokerContext.vHand.Where(h => h.Winner.ToUpper().Equals(winner.ToUpper())).OrderByDescending(h => h.Number).ToList();
+            }
+        }
         if(!string.IsNullOrEmpty(handID))
         {
-            return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).ToList();
+            return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).OrderByDescending(h => h.Number).ToList();
         }
         if(minSize != 0)
         {
-            return _pokerContext.vHand.Where(h => h.Amount >= minSize).ToList();
+            return _pokerContext.vHand.Where(h => h.Amount >= minSize).OrderByDescending(h => h.Number).ToList();
         }
         return _pokerContext.vHand.OrderByDescending(h => h.Number).Take(1000).ToList();
     }
