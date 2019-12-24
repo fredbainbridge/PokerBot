@@ -18,11 +18,13 @@ namespace PokerBot.Repository
         private ISecrets _secrets;
         private IPokerRepository _pokerRepo;
         private PokerDBContext _pokerDB;
+        private ISlackClient _slackClient;
 
-        public ScopedBalance(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext) {
+        public ScopedBalance(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient) {
             _secrets = secrets;
             _pokerRepo = pokerRepository;
             _pokerDB = pokerDBContext;
+            _slackClient = slackClient;
         }
         public async Task DoWork(CancellationToken stoppingToken)
         {
@@ -55,6 +57,7 @@ namespace PokerBot.Repository
                             
                             //s.Name = accountList.RealName[i];
                             sessions.Add(s);
+                            
                             _pokerDB.Sessions.Add(s);
                             _pokerDB.SaveChanges();
                             _pokerRepo.SetPrimaryBalance(accountList.Player[i], 100000);
@@ -65,6 +68,16 @@ namespace PokerBot.Repository
                 else
                 {
                     Console.WriteLine("A game is happening, balance changes will not be recorded.");
+                }
+                var balances = _pokerRepo.GetUserBalances();
+                foreach(Session s in sessions)
+                {
+                    var b = balances.Where(b => b.UserID == s.UserID).FirstOrDefault();
+                    var text = "New session recorded! Session total: " + s.Chips.ToString() + " Balance: " + b.Balance;
+                    _slackClient.PostAPIMessage(
+                        text: text,
+                        channel: s.User.SlackID
+                    ); 
                 }
                 
                 await Task.Delay(1800000, stoppingToken);  //run every 1 hours
