@@ -59,7 +59,8 @@ namespace PokerBot.Controllers
         public JsonResult Poker(IFormCollection Form) {
             //string externalip = new System.Net.WebClient().DownloadString("http://bot.whatismyipaddress.com");            
             //string gameUrl = "http://" + externalip + ":8087";
-            string gameUrl = "http://poker.hopto.org:8087";
+            string gameUrl = _secrets.GameURL();
+            string websiteURL = _secrets.WebsiteURL();
             string message = "";
             if(Form["Event"] == "RingGameLeave") {
                 string TableName = Form["Name"];
@@ -112,7 +113,7 @@ namespace PokerBot.Controllers
                 //get the hand history
                 //determine if its a monster hand!!
                 Hand hand = _pokerRepository.GetHandHistory(Hand);
-                string handURL = gameUrl + "/Home/Hand/" + Hand;
+                string handURL = websiteURL + "/Home/Hand/" + Hand;
                 string type = "";
 
                 if (hand.WinningAmount > 100000)
