@@ -73,7 +73,7 @@ namespace PokerBot.Repository
                 foreach(Session s in sessions)
                 {
                     var b = balances.Where(b => b.UserID == s.UserID).FirstOrDefault();
-                    var text = "New session recorded! Session total: " + s.Chips.ToString() + " Balance: " + b.Balance;
+                    var text = "Poker Session Total: " + s.Chips.ToString() + " Balance: " + b.Balance;
                     _slackClient.PostAPIMessage(
                         text: text,
                         channel: s.User.SlackID
