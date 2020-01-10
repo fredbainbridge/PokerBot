@@ -164,7 +164,7 @@ public class PokerRepository : IPokerRepository {
                 
                 s2 = s.Replace("Hand #","");
                 int index = s2.IndexOf('-') + 3;
-                hand.Number = s2.Substring(0, index).Trim();
+                hand.Number = HandID;
             }
 
             if (s.Contains(" wins Pot ("))

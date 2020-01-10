@@ -106,14 +106,14 @@ namespace PokerBot.Controllers
 
             }
             if(Form["Event"] == "Hand") {
-                string Hand = Form["Hand"];
+                string HandNumber = Form["Hand"];
                 string Table = Form["Table"];
                 string TableName = Form["Name"];
                 //get the hand number.
                 //get the hand history
                 //determine if its a monster hand!!
-                Hand hand = _pokerRepository.GetHandHistory(Hand);
-                string handURL = websiteURL + "/Home/Hand/" + Hand;
+                Hand hand = _pokerRepository.GetHandHistory(HandNumber);
+                string handURL = websiteURL + "/Home/Hand/" + HandNumber;
                 string type = "";
 
                 if (hand.WinningAmount > 100000)
@@ -190,6 +190,12 @@ namespace PokerBot.Controllers
             return Json(new EmptyResult());
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        
+        public ActionResult HOF()
+        {
+            var hands = _pokerRepository.GetHands(null, 20000, null).OrderByDescending(h => h.Amount).Take(20);
+            return View(hands);
+        }
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

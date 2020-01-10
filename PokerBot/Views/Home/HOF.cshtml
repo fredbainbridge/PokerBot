@@ -1,0 +1,52 @@
+﻿@model IEnumerable<PokerBot.Models.vHand>
+
+@{
+    ViewData["Title"] = "Hall of Fame";
+}
+
+<h1>Hall of Fame</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th width="150">
+                @Html.DisplayNameFor(model => model.Number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Winner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                Details
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td width="150">
+                    @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Winner)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    <pre>@Html.DisplayFor(modelItem => item.Data)</pre>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

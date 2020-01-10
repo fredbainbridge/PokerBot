@@ -80,7 +80,7 @@ namespace PokerBot.Repository
                     ); 
                 }
                 
-                await Task.Delay(1800000, stoppingToken);  //run every 1 hours
+                await Task.Delay(900000, stoppingToken);  //run every 15 minutes
             }
         }
     }
