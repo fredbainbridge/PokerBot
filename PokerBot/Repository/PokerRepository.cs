@@ -274,4 +274,45 @@ public class PokerRepository : IPokerRepository {
         }
         return _pokerContext.vHand.OrderByDescending(h => h.Number).Take(1000).ToList();
     }
+    public List<Session> UpdateBalances()
+    {
+        List<Session> sessions = new List<Session>();
+        List<RingGamesGet> tables = GetTable();
+        bool gameOn = false;
+        foreach (RingGamesGet t in tables)
+        {
+            gameOn = AnySeatedPlayers();
+        }
+        if (gameOn)
+        {
+            Console.WriteLine("A game is happening, balance changes will not be recorded.");
+            return null;
+        }
+        
+        DateTime now = DateTime.Now;
+        AccountsList accountList = GetAccounts();
+        for (int i = 0; i < accountList.Accounts; i++)
+        {
+            if (accountList.Balance[i] != "100000")
+            {
+                User u = _pokerContext.User.Where(u => u.UserName.Equals(accountList.Player[i])).FirstOrDefault();
+                Console.WriteLine("Recording session for " + u.RealName);
+                int balance = Int32.Parse(accountList.Balance[i]);
+                int chips = balance - 100000;
+                Session s = new Session();
+                s.Chips = chips;
+                s.Date = now;
+                s.User = u;
+
+                //s.Name = accountList.RealName[i];
+                sessions.Add(s);
+
+                _pokerContext.Sessions.Add(s);
+                _pokerContext.SaveChanges();
+                SetPrimaryBalance(accountList.Player[i], 100000);
+
+            }
+        }
+        return sessions;
+    }
 }

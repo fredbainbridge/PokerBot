@@ -43,12 +43,24 @@ namespace PokerBot.Controllers
             string userID = Form["user_id"];
             User u = _pokerContext.User.Where(u => u.SlackID.Equals(userID)).FirstOrDefault();
             UserBalance balance = _pokerContext.UserBalance.Where(b => b.UserID == u.ID).FirstOrDefault();
-            Console.WriteLine(u.RealName + " has requested their balance.");
+            var sessions = _pokerRepo.UpdateBalances();
+            Console.WriteLine(u.RealName + " has requested their balance."); 
+            if (sessions == null)
+            {
+                string gameOnText = "There is a game going on so your balance may not be accurate.";
+                _slackClient.PostAPIMessage(
+                    text: gameOnText,
+                    channel: userID
+                );
+            }
+            
             string text = "Your balance is: " + balance.Balance;
             _slackClient.PostAPIMessage(
                 text: text,
                 channel: userID
-                );
+            );
+                       
+            
             return new EmptyResult();
         }
         public IActionResult RequestPayment(IFormCollection Form)
@@ -123,8 +135,12 @@ namespace PokerBot.Controllers
                     throw new Exception("Unable to determine the chip amount.");
                 }
             }
+            
             User Payer = _pokerContext.User.Where(u => u.SlackID.Equals(payerID)).FirstOrDefault();
             User Payee = _pokerContext.User.Where(u => u.SlackID.Equals(payeeID)).FirstOrDefault();
+
+            string prevBalance = _pokerContext.UserBalance.Where(b => b.UserID == Payer.ID).Select(b => b.Balance).FirstOrDefault();
+
             Payment payment = new Payment();
             payment.Chips = chipint;
             payment.DateRequested = DateTime.Now;
@@ -133,10 +149,15 @@ namespace PokerBot.Controllers
             _pokerContext.Payment.Add(payment);
             _pokerContext.SaveChanges();
 
+            string curBalance = _pokerContext.UserBalance.Where(b => b.UserID == Payer.ID).Select(b => b.Balance).FirstOrDefault();
+
             string chipsMoney = "$" + string.Format("{0:#.00}", Convert.ToDecimal(chipint) / 100 );
 
             //slack to payer
             string payerMsg = "Please pay " + payeeName + " " + chipsMoney + ".  When the payment is sent do: ```/paid @" + payeeName + " [method of payment]```";
+            _slackClient.PostAPIMessage(payerMsg, null, payerID);
+
+            payerMsg = "Previous balance: " + prevBalance + ".  Current Balance: " + curBalance;
             _slackClient.PostAPIMessage(payerMsg, null, payerID);
 
             //slack to payee
