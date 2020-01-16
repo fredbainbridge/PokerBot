@@ -52,7 +52,7 @@
                 @Html.DisplayFor(modelItem => item.Amount)
             </td>
             <td>
-                <pre>@Html.DisplayFor(modelItem => item.Data)</pre>
+                @Html.Raw(item.Data)
             </td>
 
         </tr>

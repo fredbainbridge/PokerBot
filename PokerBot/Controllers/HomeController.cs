@@ -49,7 +49,8 @@ namespace PokerBot.Controllers
             ViewBag.minSize = minSize;
             ViewBag.winner = winner;
             List<vHand> hands = _pokerRepository.GetHands(ID, minSize, winner);
-            return View(hands);
+            
+            return View(_pokerRepository.AddArtToHands(hands));
         }
         public IActionResult Privacy()
         {
@@ -132,7 +133,16 @@ namespace PokerBot.Controllers
                 {
                     string amount = String.Format("{0:n0}", hand.WinningAmount);
                     message = hand.Winner.UserName + " just won a " + type + " pot! (" + amount + ") " + handURL;
-                }                
+                }
+                if(_pokerRepository.IsHOF(hand.Number))
+                {
+                    if (!_secrets.Silence())
+                    {
+                        _slackClient.PostWebhookMessage(
+                            text: "We have a new Hall of Fame pot! " + handURL
+                        );
+                    }
+                }
             }
             if(Form["Event"] == "Balance") {
                 string player = Form["Player"];
@@ -193,8 +203,8 @@ namespace PokerBot.Controllers
         
         public ActionResult HOF()
         {
-            var hands = _pokerRepository.GetHands(null, 20000, null).OrderByDescending(h => h.Amount).Take(20);
-            return View(hands);
+            var hands = _pokerRepository.GetHands(null, 10000, null).OrderByDescending(h => h.Amount).Take(20).ToList();
+            return View(_pokerRepository.AddArtToHands(hands));
         }
         public IActionResult Error()
         {

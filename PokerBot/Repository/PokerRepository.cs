@@ -315,4 +315,60 @@ public class PokerRepository : IPokerRepository {
         }
         return sessions;
     }
+    public bool IsHOF(string number)
+    {
+        var hands = GetHands(null, 10000, null)
+            .OrderByDescending(h => h.Amount)
+            .Take(20);
+        foreach(var h in hands)
+        {
+            if (h.Number.Equals(number))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public List<vHand> AddArtToHands(List<vHand> hands) {
+        string url = "/media/";
+        List<string> ranks = new List<string> { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+        List<string> suits = new List<string> { "s", "d", "c", "h" };
+            
+        foreach(var h in hands)
+        {
+            var lines = h.Data.Split("\n");
+            string newData = "";
+            foreach(var l in lines)
+            {
+                string line = l;
+                if(line.Contains("** Flop ** [") ||
+                    line.Contains("** Turn ** [") ||
+                    line.Contains("** River ** [") ||
+                    line.Contains("** Pot Show Down ** [") ||
+                    line.Contains(" shows ["))
+                {
+                    foreach (string r in ranks)
+                    {
+                        foreach (string s in suits)
+                        {
+                            int pos1 = line.IndexOf('[');
+                            int pos2 = line.IndexOf(']');
+                            string cards = line.Substring(pos1+1, pos2 - pos1-1);
+                            string newCards = cards;
+                            string artUrl = url + r + s + ".png";
+                            artUrl = "<img src = \"" + artUrl + "\" width=\"42\" height=\"59\">";
+                            newCards = newCards.Replace(r + s, artUrl);
+                            line = line.Replace(cards, newCards);
+                        }
+                    }
+                            
+                }
+                line = line + "</br>";
+                newData = newData + line;
+            }
+            h.Data = newData;
+        }
+         
+        return hands;
+    }
 }

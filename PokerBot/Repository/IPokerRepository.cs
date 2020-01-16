@@ -18,5 +18,7 @@ namespace PokerBot.Repository {
         bool AnySeatedPlayers();
         List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null);
         List<Session> UpdateBalances();
+        bool IsHOF(string number);
+        List<vHand> AddArtToHands(List<vHand> hands);
     }
 }
