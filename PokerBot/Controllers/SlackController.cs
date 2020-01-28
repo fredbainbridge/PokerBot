@@ -52,16 +52,23 @@ namespace PokerBot.Controllers
                     text: gameOnText,
                     channel: userID
                 );
-            }
+            } 
             var balances = _pokerRepo.GetUserBalances();
-            foreach (Session s in sessions)
+            try
             {
-                var b = balances.Where(b => b.UserID == s.UserID).FirstOrDefault();
-                var text2 = "Poker Session Total: " + s.Chips.ToString() + " Balance: " + b.Balance;
-                _slackClient.PostAPIMessage(
-                    text: text2,
-                    channel: s.User.SlackID
-                );
+                foreach (Session s in sessions)
+                {
+                    var b = balances.Where(b => b.UserID == s.UserID).FirstOrDefault();
+                    var text2 = "Poker Session Total: " + s.Chips.ToString() + " Balance: " + b.Balance;
+                    _slackClient.PostAPIMessage(
+                        text: text2,
+                        channel: s.User.SlackID
+                    );
+                }
+            }
+            catch
+            {
+
             }
             string text = "Your balance is: " + balance.Balance;
             _slackClient.PostAPIMessage(

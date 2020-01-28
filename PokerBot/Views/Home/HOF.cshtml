@@ -6,46 +6,52 @@
 
 <h1>Hall of Fame</h1>
 <table class="table">
-    <thead>
-        <tr>
-            <th width="150">
-                @Html.DisplayNameFor(model => model.Number)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Winner)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                Details
-            </th>
-            <th></th>
-        </tr>
-    </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td width="150">
-                    @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
-                </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Date)
+                    <table>
+                        <tr>
+                            <td>
+                                Hand
+                            </td>
+                            <td>
+                                @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Date
+                            </td>
+                            <td nowrap>
+                                @Html.DisplayFor(modelItem => item.Date)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Winner
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Winner)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Amount
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                        </tr>
+                    </table>
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Winner)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
-                </td>
+            </tr>
+            
+            <tr>
                 <td>
                     @Html.Raw(item.Data)
                 </td>
-
             </tr>
         }
     </tbody>

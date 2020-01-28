@@ -11,51 +11,58 @@
     }
 </script>
 <label>Min. Pot Size</label>
-<input type="text" id="minsizetext" value="@ViewBag.minSize"/>
+<input type="text" id="minsizetext" value="@ViewBag.minSize" />
 <label>Winner</label>
-<input type="text" id="winnertext" value="@ViewBag.winner"/>
+<input type="text" id="winnertext" value="@ViewBag.winner" />
 <button name="sizeFilter" onclick="minsize()">Filter</button>
 <table class="table">
-    <thead>
-        <tr>
-            <th width="150">
-                @Html.DisplayNameFor(model => model.Number)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Winner)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                Details
-            </th>
-            <th></th>
-        </tr>
-    </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td width="150">
-                @Html.ActionLink(item.Number,"Hands","Home", new { ID = item.Number})
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Winner)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.Raw(item.Data)
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                Hand
+                            </td>
+                            <td>
+                                @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Date
+                            </td>
+                            <td nowrap>
+                                @Html.DisplayFor(modelItem => item.Date)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Winner
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Winner)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Amount
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
 
-        </tr>
-}
+            <tr>
+                <td>
+                    @Html.Raw(item.Data)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -167,14 +167,21 @@ public class PokerRepository : IPokerRepository {
                 hand.Number = HandID;
             }
 
-            if (s.Contains(" wins Pot ("))
+            if (s.Contains(" wins Pot (") || s.Contains(" wins Main Pot ("))
             { //winner declaration
               //"Fred wins Pot (40)"
-                int index1 = s.IndexOf(" wins Pot (");
+                int index1 = s.IndexOf(" wins ");
                 string player = s.Substring(0, index1);
                 hand.Winner = _pokerContext.User.Where(u => u.UserName.Equals(player)).FirstOrDefault();
 
-                index1 = s.LastIndexOf(" wins Pot (") + 11;
+                if(s.LastIndexOf(" wins Pot (") == -1)
+                {
+                    index1 = s.LastIndexOf(" wins Main Pot (") + 16;
+                }
+                else
+                {
+                    index1 = s.LastIndexOf(" wins Pot (") + 11;
+                }
                 int index2 = s.LastIndexOf(")"); ;
                 string winningAmountString = s.Substring(index1, index2 - index1);
                 
@@ -338,8 +345,14 @@ public class PokerRepository : IPokerRepository {
         {
             var lines = h.Data.Split("\n");
             string newData = "";
+            int counter = 0;
             foreach(var l in lines)
             {
+                counter++;
+                if(counter < 5)
+                {
+                    continue;
+                }
                 string line = l;
                 if(line.Contains("** Flop ** [") ||
                     line.Contains("** Turn ** [") ||
@@ -359,10 +372,19 @@ public class PokerRepository : IPokerRepository {
                             artUrl = "<img src = \"" + artUrl + "\" width=\"42\" height=\"59\">";
                             newCards = newCards.Replace(r + s, artUrl);
                             line = line.Replace(cards, newCards);
+                            
                         }
                     }
-                            
+                    line = line.Replace("]", "").Replace("[", "");
+                    line = line.Replace(" **", " **</br>");
+                    line = line.Replace("shows ", "shows </br>");
+                    if (line.Contains(" shows"))
+                    {
+                        line = line.Replace("(", "</br>(");
+                    }
+
                 }
+                
                 line = line + "</br>";
                 newData = newData + line;
             }

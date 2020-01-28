@@ -114,7 +114,7 @@ namespace PokerBot.Controllers
                 //get the hand history
                 //determine if its a monster hand!!
                 Hand hand = _pokerRepository.GetHandHistory(HandNumber);
-                string handURL = websiteURL + "/Home/Hand/" + HandNumber;
+                string handURL = websiteURL + "/Home/Hands/" + HandNumber;
                 string type = "";
 
                 if (hand.WinningAmount > 100000)
