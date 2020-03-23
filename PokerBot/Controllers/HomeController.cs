@@ -65,16 +65,24 @@ namespace PokerBot.Controllers
             string message = "";
             if(Form["Event"] == "RingGameLeave") {
                 string TableName = Form["Name"];
+                if (!_pokerRepository.isMainGame(TableName))
+                {
+                    return Json(new EmptyResult());
+                }
                 string PlayerName = Form["Player"];
                 string Amount = Form["Amount"];
                 string Time = Form["Time"];
 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
-                message = PlayerName + " has left the table. " + remainingSeatsMsg;
+                message = PlayerName + $" has left {TableName}. " + remainingSeatsMsg;
                 _gameState.RemovePlayer(PlayerName);
             }
             if(Form["Event"] == "RingGameJoin") {
                 string TableName = Form["Name"];
+                if (!_pokerRepository.isMainGame(TableName))
+                {
+                    return Json(new EmptyResult());
+                }
                 string PlayerName = Form["Player"];
                 string Amount = Form["Amount"];
                 string Time = Form["Time"];
@@ -82,7 +90,7 @@ namespace PokerBot.Controllers
                 string remainingSeats = _pokerRepository.RemainingSeatsMessage(TableName);
                 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
-                message = PlayerName + " has sat down with $" + Amount + "! " + remainingSeatsMsg + gameUrl;
+                message = PlayerName + " has sat down with $" + Amount + $" at {TableName}! " + remainingSeatsMsg + gameUrl;
                 if(remainingSeats.Equals("There are 6 seats remaining. "))
                 {
                     _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
@@ -94,12 +102,16 @@ namespace PokerBot.Controllers
             }
             if(Form["Event"] == "RingGameStart") {
                 string TableName = Form["Name"];
+                if (!_pokerRepository.isMainGame(TableName))
+                {
+                    return Json(new EmptyResult());
+                }
                 string Time = Form["Time"];
                 TimeSpan ts = DateTime.Now - _gameState.LastGameStartAlert();
                 if(ts.TotalMinutes > 15)
                 {
-                    if(!_gameState.GetLastMessage().Equals("A game has started! " + gameUrl)) {
-                        message = "A game has started! " + gameUrl;
+                    if(!_gameState.GetLastMessage().Equals($"A game has started at {TableName}! " + gameUrl)) {
+                        message = $"A game has started at {TableName}! " + gameUrl;
                         _gameState.SetLastGameStartAlert();
                     }
                 }
@@ -108,8 +120,11 @@ namespace PokerBot.Controllers
             }
             if(Form["Event"] == "Hand") {
                 string HandNumber = Form["Hand"];
-                string Table = Form["Table"];
                 string TableName = Form["Name"];
+                if (!_pokerRepository.isMainGame(TableName))
+                {
+                    return Json(new EmptyResult());
+                }
                 //get the hand number.
                 //get the hand history
                 //determine if its a monster hand!!
@@ -132,7 +147,7 @@ namespace PokerBot.Controllers
                 if (!string.IsNullOrEmpty(type))
                 {
                     string amount = String.Format("{0:n0}", hand.WinningAmount);
-                    message = hand.Winner.UserName + " just won a " + type + " pot! (" + amount + ") " + handURL;
+                    message = hand.Winner.UserName + " just won a " + type + $" pot at {TableName}! (" + amount + ") " + handURL;
                 }
                 if(_pokerRepository.IsHOF(hand.Number))
                 {
@@ -147,6 +162,10 @@ namespace PokerBot.Controllers
             if(Form["Event"] == "Balance") {
                 string player = Form["Player"];
                 string source = Form["Source"];
+                if (!_pokerRepository.isMainGame(source))
+                {
+                    return Json(new EmptyResult());
+                }
                 string change = Form["Change"];
                 int changeInt = Int32.Parse(change);
                 if(changeInt < 0)
@@ -164,9 +183,7 @@ namespace PokerBot.Controllers
                         }
                     }
                 }
-                
                 //if they are not seated, do nothing.
-
             }
             if(Form["Event"] == "Login")
             {

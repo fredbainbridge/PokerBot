@@ -1,7 +1,7 @@
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.Extensions.FileProviders.Embedded;
-
+using System.Collections.Generic;
 namespace PokerBot.Repository {
     class Secret {
         public string ServerURL {get; set;}
@@ -11,6 +11,8 @@ namespace PokerBot.Repository {
         public string Token { get; set; }
         public string WebsiteURL { get; set; }
         public string GameURL { get; set; }
+        public List<string> GameNames { get; set; }
+        public int Balance { get; set; }
     }
     public class Secrets : ISecrets {
         private Secret _secret;
@@ -46,6 +48,14 @@ namespace PokerBot.Repository {
         public string GameURL()
         {
             return _secret.GameURL;
+        }
+        public int Balance()
+        {
+            return _secret.Balance;
+        }
+        public List<string> GameName()
+        {
+            return _secret.GameNames;
         }
     }
 }

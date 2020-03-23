@@ -133,6 +133,17 @@ public class PokerRepository : IPokerRepository {
         }          
         return false;
     }
+    public bool isMainGame(string tableName)
+    {
+        foreach(string mainGamename in _secrets.GameName())
+        {
+            if(tableName.StartsWith(mainGamename))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public Hand GetHandHistory(string HandID) {
         var client = new MaevenClient<LogsHandHistory>(_secrets.PokerURL(), _secrets.Password());
         Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -145,7 +156,14 @@ public class PokerRepository : IPokerRepository {
         
         foreach(string s in request.Data)
         {
-            if(s.Contains("** Summary **"))
+            if(s.Contains("Game: "))
+            {
+                int i = s.IndexOf("Game: ");
+                string TableName = s.Substring(i);
+                hand.TableName = TableName;
+            }
+
+            if (s.Contains("** Summary **"))
             {
                 break;
             }
@@ -286,10 +304,7 @@ public class PokerRepository : IPokerRepository {
         List<Session> sessions = new List<Session>();
         List<RingGamesGet> tables = GetTable();
         bool gameOn = false;
-        foreach (RingGamesGet t in tables)
-        {
-            gameOn = AnySeatedPlayers();
-        }
+        gameOn = AnySeatedPlayers(); 
         if (gameOn)
         {
             Console.WriteLine("A game is happening, balance changes will not be recorded.");

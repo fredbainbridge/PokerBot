@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace PokerBot.Repository {
     public interface ISecrets{
         string PokerURL();
@@ -7,5 +8,7 @@ namespace PokerBot.Repository {
         string Token();
         string WebsiteURL();
         string GameURL();
+        int Balance();
+        List<string> GameName();
     }
 }

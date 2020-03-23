@@ -20,5 +20,6 @@ namespace PokerBot.Repository {
         List<Session> UpdateBalances();
         bool IsHOF(string number);
         List<vHand> AddArtToHands(List<vHand> hands);
+        bool isMainGame(string tableName);
     }
 }

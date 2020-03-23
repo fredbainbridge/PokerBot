@@ -7,6 +7,26 @@
 <h1>Hall of Fame</h1>
 <table class="table">
     <tbody>
+        <tr>
+            <th>Player</th>
+            <th>HOF Hands</th>
+        </tr>
+        @{
+            foreach (var winner in Model.GroupBy(m => m.Winner).Select(group =>
+                 new { Player = group.Key, Count = group.Count() }).OrderByDescending(count => count.Count))
+            {
+                <tr>
+                    <td>@winner.Player</td>
+                    <td>@winner.Count</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<h2>Hands</h2>
+<table class="table">
+    <tbody>
+        
         @foreach (var item in Model)
         {
             <tr>

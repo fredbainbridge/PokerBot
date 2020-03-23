@@ -19,5 +19,6 @@ namespace PokerBot.Models
         public int WinningAmount { get; set; }
         public string Data { get; set; }
         public DateTime? Date { get; set; }
+        public string TableName { get; set; }
     }
 }
