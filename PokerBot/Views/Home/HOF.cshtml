@@ -4,6 +4,14 @@
     ViewData["Title"] = "Hall of Fame";
 }
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    function headerClick() {
+        alert("BOOM");
+    }
+</script>
 <h1>Hall of Fame</h1>
 <table class="table">
     <tbody>
@@ -24,55 +32,37 @@
     </tbody>
 </table>
 <h2>Hands</h2>
-<table class="table">
-    <tbody>
-        
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <td>
-                                Hand
-                            </td>
-                            <td>
-                                @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Date
-                            </td>
-                            <td nowrap>
-                                @Html.DisplayFor(modelItem => item.Date)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Winner
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Winner)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Amount
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Amount)
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    @Html.Raw(item.Data)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-2">Winner</div>
+    <div class="col-2">Amount</div>
+    <div class="col-3">Date</div>
+    <div class="col-2">Hand</div>
+</div>
+@{ 
+    int i = 0;
+    foreach (var item in Model)
+    {
+        i++;
+    <div class="container">
+        <div class="header row bold" data-toggle="collapse" data-target="#details@(i.ToString())">
+            <div class="col-2">
+                @Html.DisplayFor(modelItem => item.Winner)
+            </div>
+            <div class="col-2">
+                @Html.DisplayFor(modelItem => item.Amount)
+            </div>
+            <div class="col-3 flex-nowrap">
+                @Html.DisplayFor(modelItem => item.Date)
+            </div>
+            <div class="col-2">
+                @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
+            </div>
+        </div>
+        <div class="collapse" id="details@(i.ToString())">
+            <div colspan=12>
+                @Html.Raw(item.Data)
+            </div>
+        </div>
+    </div>
+    }
+}

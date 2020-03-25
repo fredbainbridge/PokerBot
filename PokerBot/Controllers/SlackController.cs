@@ -290,7 +290,12 @@ namespace PokerBot.Controllers
                     RealName += parameters[i];
                 }
             }
-
+            if(Player.Length < 3 || Player.Length > 12)
+            {
+                string errmsg = $"{Player} is too long or too short. Trying something with more than 3 character or less than 12.";
+                _slackClient.PostAPIMessage(errmsg, null, userID);
+                return new EmptyResult();
+            }
             string Location = "The internet";
             string Email = "not@real.address";
             if(string.IsNullOrEmpty(Player))
@@ -301,7 +306,7 @@ namespace PokerBot.Controllers
             {
                 RealName = userName;
             }
-           var response =  _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
+            var response =  _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
             string message = "Poker account created!  UserName: " + Player + ". Password: password";
             _slackClient.PostAPIMessage(message, null, userID);
             message = "Please change your password using /changepw.";

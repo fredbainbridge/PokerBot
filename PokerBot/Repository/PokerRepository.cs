@@ -391,16 +391,16 @@ public class PokerRepository : IPokerRepository {
                         }
                     }
                     line = line.Replace("]", "").Replace("[", "");
-                    line = line.Replace(" **", " **</br>");
-                    line = line.Replace("shows ", "shows </br>");
+                    line = line.Replace(" **", " **<br/>");
+                    line = line.Replace("shows ", "shows <br/>");
                     if (line.Contains(" shows"))
                     {
-                        line = line.Replace("(", "</br>(");
+                        line = line.Replace("(", "<br/>(");
                     }
 
                 }
                 
-                line = line + "</br>";
+                line = line + "<br/>";
                 newData = newData + line;
             }
             h.Data = newData;
