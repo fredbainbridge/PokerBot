@@ -4,15 +4,18 @@ using Microsoft.Extensions.FileProviders.Embedded;
 using System.Collections.Generic;
 namespace PokerBot.Repository {
     class Secret {
-        public string ServerURL {get; set;}
-        public string Password {get; set;}
-        public string SlackURL {get; set;}
+        public string ServerURL { get; set; }
+        public string Password { get; set; }
+        public string SlackURL { get; set; }
         public bool Silence { get; set; }
         public string Token { get; set; }
+        public string UserToken { get; set; }
         public string WebsiteURL { get; set; }
         public string GameURL { get; set; }
         public List<string> GameNames { get; set; }
         public int Balance { get; set; }
+        public List<string> HOFExclusions { get; set; }
+        public string AvatarDir { get; set; }
     }
     public class Secrets : ISecrets {
         private Secret _secret;
@@ -41,6 +44,10 @@ namespace PokerBot.Repository {
         {
             return _secret.Token;
         }
+        public string UserToken()
+        {
+            return _secret.UserToken;
+        }
         public string WebsiteURL()
         {
             return _secret.WebsiteURL;
@@ -56,6 +63,14 @@ namespace PokerBot.Repository {
         public List<string> GameName()
         {
             return _secret.GameNames;
+        }
+        public List<string> HOFExclusions()
+        {
+            return _secret.HOFExclusions;
+        }
+        public string AvatarDir()
+        {
+            return _secret.AvatarDir;
         }
     }
 }

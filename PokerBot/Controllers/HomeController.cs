@@ -220,7 +220,9 @@ namespace PokerBot.Controllers
         
         public ActionResult HOF()
         {
-            var hands = _pokerRepository.GetHands(null, 10000, null).OrderByDescending(h => h.Amount).Take(20).ToList();
+            var hands = _pokerRepository.GetHands(null, 10000, null)
+                .Where(h => !(h.TableName != null && _secrets.HOFExclusions().Contains(h.TableName)))
+                .OrderByDescending(h => h.Amount).Take(20).ToList();
             return View(_pokerRepository.AddArtToHands(hands));
         }
         public IActionResult Error()

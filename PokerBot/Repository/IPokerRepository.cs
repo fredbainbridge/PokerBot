@@ -7,6 +7,7 @@ namespace PokerBot.Repository {
         List<RingGamesGet> GetTable(string TableName = null);
         int OpenSeats(string TableName);
         string RemainingSeatsMessage(string TableName);
+        void SetAvatarPath(string name, string path);
         Hand GetHandHistory(string HandID);
         void SendAdminMessage(string Message, string TableName);
         AccountsList GetAccounts();

@@ -82,7 +82,6 @@ namespace PokerBot.Repository {
 			}
 		}
         //for direct messages U0Y7697U1 https://stackoverflow.com/questions/48347073/using-slack-how-do-you-send-direct-message-to-user-based-on-their-member-id
-
     }
 
     //This class serializes into the Json payload required by Slack Incoming WebHooks

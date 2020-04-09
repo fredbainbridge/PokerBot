@@ -15,6 +15,8 @@ namespace PokerBot.Models
         public string UserName { get; set; }
         public string EmailAddress { get; set; }
         public string RealName { get; set; }
+        public int AvatarIndex { get; set; }
+        public string AvatarHash { get; set; }
         
         [InverseProperty("User")]
         public virtual ICollection<Session> Sessions { get; set; } 

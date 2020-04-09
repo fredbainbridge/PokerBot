@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PokerBot.Repository;
 using PokerBot.Models;
-using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using PokerBot.Services;
+
 namespace PokerBot
 {
     public class Startup
@@ -31,8 +28,13 @@ namespace PokerBot
             services.AddScoped<IPokerRepository, PokerRepository>();
             services.AddScoped<ISlackClient, SlackClient>();
             services.AddSingleton<IGameState, GameState>();
+
+            //background services
             services.AddHostedService<ConsumeScopedBalance>();
             services.AddScoped<IScopedBalance, ScopedBalance>();
+            services.AddHostedService<ConsumeSlackUserAvatar>();
+            services.AddScoped<ISlackUserAvatar, SlackUserAvatar>();
+
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
                 services.AddDbContext<PokerDBContext>(options =>
                         options.UseSqlServer(Configuration.GetConnectionString("azureConnection")));

@@ -20,5 +20,6 @@ namespace PokerBot.Models
         public string Data { get; set; }
         public DateTime? Date { get; set; }
         public string TableName { get; set; }
+        public string Game { get; set; }
     }
 }

@@ -59,6 +59,17 @@ public class PokerRepository : IPokerRepository {
     {
         return _pokerContext.vSession.Take(Top.HasValue ? Top.Value : int.MaxValue).ToList();
     }
+    public void SetAvatarPath(string name, string path)
+    {
+        var client = new MaevenClient<AccountsEdit>(_secrets.PokerURL(), _secrets.Password());
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        dict.Add("Command", "AccountsEdit");
+        dict.Add("Player", name);
+        dict.Add("AvatarFile", path);
+        dict.Add("Avatar", "0");
+        client.Post(dict);
+
+    }
     public void SetPrimaryBalance(string Name, int Balance)
     {
         var client = new MaevenClient<AccountsEdit>(_secrets.PokerURL(), _secrets.Password());
@@ -156,11 +167,16 @@ public class PokerRepository : IPokerRepository {
         
         foreach(string s in request.Data)
         {
-            if(s.Contains("Game: "))
+            if(s.StartsWith("Table: "))
+            {
+                hand.TableName = s.Substring(7);
+            }
+
+            if (s.Contains("Game: "))
             {
                 int i = s.IndexOf("Game: ");
-                string TableName = s.Substring(i);
-                hand.TableName = TableName;
+                string TableName = s.Substring(i + 6).Trim();
+                hand.Game = TableName;
             }
 
             if (s.Contains("** Summary **"))
@@ -340,6 +356,7 @@ public class PokerRepository : IPokerRepository {
     public bool IsHOF(string number)
     {
         var hands = GetHands(null, 10000, null)
+            .Where(h => !_secrets.HOFExclusions().Contains(h.TableName))
             .OrderByDescending(h => h.Amount)
             .Take(20);
         foreach(var h in hands)
