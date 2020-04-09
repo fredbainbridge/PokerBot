@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="secrets.json" />
-    <EmbeddedResource Include="avatar.png" />
   </ItemGroup>
 
   <ItemGroup>
