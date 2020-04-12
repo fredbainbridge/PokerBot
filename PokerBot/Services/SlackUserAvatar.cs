@@ -72,7 +72,7 @@ namespace PokerBot.Services
                         Console.WriteLine("Message :{0} ", e.Message);
                     }
                     _pokerRepo.SetAvatarPath(user.UserName, _secrets.AvatarDir() + user.SlackID + ".png");
-                    await Task.Delay(200, cancellationToken);
+                    await Task.Delay(20000, cancellationToken);
                 }
                     
                 _pokerDB.SaveChanges();                
