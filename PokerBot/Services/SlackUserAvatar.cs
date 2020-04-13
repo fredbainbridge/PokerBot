@@ -64,6 +64,10 @@ namespace PokerBot.Services
                             i.Write(_secrets.AvatarDir() + user.SlackID + ".png");
                             user.AvatarHash = u.Profile.AvatarHash;
                         }
+                        if(!u.Profile.DisplayName.Equals(user.SlackUserName))
+                        {
+                            user.SlackUserName = u.Profile.DisplayName;
+                        }
                         user.AvatarIndex = counter;
                     }
                     catch (HttpRequestException e)

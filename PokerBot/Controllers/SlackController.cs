@@ -170,16 +170,16 @@ namespace PokerBot.Controllers
             string chipsMoney = "$" + string.Format("{0:#.00}", Convert.ToDecimal(chipint) / 100 );
 
             //slack to payer
-            string payerMsg = "Please pay " + payeeName + " " + chipsMoney + ".  When the payment is sent do: ```/paid @" + payeeName + " [method of payment]```";
+            string payerMsg = $"Please pay <@{Payee.SlackID}> {chipsMoney}.  When the payment is sent do: ```/paid <@{Payee.SlackID}> [method of payment]```";
             _slackClient.PostAPIMessage(payerMsg, null, payerID);
 
             payerMsg = "Previous balance: " + prevBalance + ".  Current Balance: " + curBalance;
             _slackClient.PostAPIMessage(payerMsg, null, payerID);
 
             //slack to payee
-            string payeeMsg = payerName + " has been requested to pay you " + chipsMoney + ".  You will be notified when the payment is sent.";
+            string payeeMsg = $"<@{Payer.SlackID}> has been requested to pay you {chipsMoney}.  You will be notified when the payment is sent.";
             _slackClient.PostAPIMessage(payeeMsg, null, payeeID);
-            return new EmptyResult();       
+            return new EmptyResult();
         }
         public IActionResult PaymentSent(IFormCollection Form)
         {
@@ -198,19 +198,19 @@ namespace PokerBot.Controllers
             Payment existingPayment = _pokerContext.Payment.Where(p => p.Payee == payee && p.Payer == payer && p.Confirmed == null).FirstOrDefault();
             if(existingPayment == null)
             {
-                string msg = "There is no existing payment between you and " + toName + ".";
+                string msg = $"There is no existing payment between you and <@{payee.SlackID}>.";
                 _slackClient.PostAPIMessage(msg, null, userID);
                 return new EmptyResult();
             }
             existingPayment.Sent = DateTime.Now;
             _pokerContext.SaveChanges();
 
-            string payeeMsg = userName + " has sent you a payment via: " + notes;
+            string payeeMsg = $"<@{payer.SlackID}> has sent you a payment via: " + notes;
             _slackClient.PostAPIMessage(payeeMsg, null, to);
-            payeeMsg = "Confirm payment has been received with /confirm @" + userName;
+            payeeMsg = $"Confirm payment has been received with /confirm <@{payer.SlackID}>";
             _slackClient.PostAPIMessage(payeeMsg, null, to);
 
-            string payerMsg = toName + " has been notified of your payment.  You will be notified when " + toName + " confirms the payment.";
+            string payerMsg = toName + $"<@{payee.SlackID}> has been notified of your payment.  You will be notified when <@{payee.SlackID}> confirms the payment.";
             _slackClient.PostAPIMessage(payerMsg, null, userID);
             return new EmptyResult();
         }
@@ -231,12 +231,12 @@ namespace PokerBot.Controllers
             Payment payment = _pokerContext.Payment.Where(p => p.Payee == payee && p.Payer == payer && p.Confirmed == null).FirstOrDefault();
             if(payment == null)
             {
-                _slackClient.PostAPIMessage("No open payment found from " + userName + " to you.");
+                _slackClient.PostAPIMessage($"No open payment found from <@{payer.SlackID}> to you.",null, userID);
                 return new EmptyResult();
             }
             payment.Confirmed = DateTime.Now;
             _pokerContext.SaveChanges();
-            string fromMessage = userName + " confirmed receipt of your payment.";
+            string fromMessage = userName + $"<@{payee.SlackID}> confirmed receipt of your payment.";
             _slackClient.PostAPIMessage(fromMessage, null, fromID);
 
             string toMessage = "Payment receipt confirmed, thank you.";

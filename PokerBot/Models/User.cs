@@ -17,6 +17,7 @@ namespace PokerBot.Models
         public string RealName { get; set; }
         public int AvatarIndex { get; set; }
         public string AvatarHash { get; set; }
+        public string SlackUserName { get; set; }
         
         [InverseProperty("User")]
         public virtual ICollection<Session> Sessions { get; set; } 
