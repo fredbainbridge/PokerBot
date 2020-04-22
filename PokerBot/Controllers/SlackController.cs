@@ -70,7 +70,15 @@ namespace PokerBot.Controllers
             {
 
             }
-            string text = "Your balance is: " + balance.Balance;
+            string text = "";
+            try
+            {
+                text = "Your balance is: " + balance.Balance;
+            }
+            catch
+            {
+                text = "You have never played in a cash game.";
+            }
             _slackClient.PostAPIMessage(
                 text: text,
                 channel: userID

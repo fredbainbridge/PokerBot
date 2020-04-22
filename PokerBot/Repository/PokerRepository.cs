@@ -164,7 +164,8 @@ public class PokerRepository : IPokerRepository {
         //"Hand #10001-1 - 2019-12-09 21:05:05",
 
         Hand hand = new Hand();
-        
+        Dictionary<string, int> winners = new Dictionary<string, int>();
+            
         foreach(string s in request.Data)
         {
             if(s.StartsWith("Table: "))
@@ -200,13 +201,16 @@ public class PokerRepository : IPokerRepository {
                 int index = s2.IndexOf('-') + 3;
                 hand.Number = HandID;
             }
-
-            if (s.Contains(" wins Pot (") || s.Contains(" wins Main Pot ("))
+            //wins Side Pot
+            //wins Main Pot
+            //wins Pot
+            
+            if (s.Contains(" wins Pot (") || s.Contains(" wins Main Pot (") || s.Contains(" wins Side Pot ") )
             { //winner declaration
               //"Fred wins Pot (40)"
                 int index1 = s.IndexOf(" wins ");
                 string player = s.Substring(0, index1);
-                hand.Winner = _pokerContext.User.Where(u => u.UserName.Equals(player)).FirstOrDefault();
+                //hand.Winner = _pokerContext.User.Where(u => u.UserName.Equals(player)).FirstOrDefault();
 
                 if(s.LastIndexOf(" wins Pot (") == -1)
                 {
@@ -224,10 +228,19 @@ public class PokerRepository : IPokerRepository {
                 bool success = Int32.TryParse(winningAmountString, out winningAmountInt);
                 if (success)
                 {
-                    hand.WinningAmount = winningAmountInt;
-                }
+                    //hand.WinningAmount = winningAmountInt;
+                    if(winners.Keys.Contains(player)) {
+                        winners[player] = winners[player] + winningAmountInt;
+                    }
+                    else {
+                        winners.Add(player, winningAmountInt);
+                    }
+                }   
             }
         }
+        var totalWinner = winners.OrderByDescending(w => w.Value).FirstOrDefault();
+        hand.Winner = _pokerContext.User.Where(u => u.UserName.Equals(totalWinner.Key)).FirstOrDefault();
+        hand.WinningAmount = totalWinner.Value; 
         _pokerContext.Hand.Add(hand);
         _pokerContext.SaveChanges();
         return hand;
