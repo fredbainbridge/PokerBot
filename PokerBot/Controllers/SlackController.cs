@@ -272,53 +272,95 @@ namespace PokerBot.Controllers
         }
         public IActionResult Register(IFormCollection Form)
         {
-            
+
             //params (optional): username, realname
+            //@slackID, pokername, realname
+            //is this fred?
             string userID = Form["user_id"];
-            string userName = Form["user_name"];
             User u = _pokerContext.User.Where(u => u.SlackID.Equals(userID)).FirstOrDefault();
-            if (u != null)
+            if (!u.RealName.Equals("Fred"))
+            {
+                string errmsg = $"You are not allowed to register new players.";
+                _slackClient.PostAPIMessage(errmsg, null, userID);
+                return new EmptyResult();
+            }
+            string text = Form["Text"];
+            string[] parameters = text.Split(' ');
+            string newPlayerSlackID = "";
+            string newPlayerSlackName = "";
+            string pokerName = "";
+            string realName = "";
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (i == 0)  //who are we registering?
+                {
+                    try
+                    {
+                        newPlayerSlackID = parameters[i].Trim('<').Trim('>').Trim('@').Split('|')[0];
+                        newPlayerSlackName = parameters[i].Trim('<').Trim('>').Trim('@').Split('|')[1];
+                    }
+                    catch
+                    {
+                        _slackClient.PostAPIMessage($"Unable to determine the new player.  {parameters[i]}", null, userID);
+                        return new EmptyResult();
+                    }
+
+                }
+                if (i == 1) //pokername
+                {
+                    try
+                    {
+                        pokerName = parameters[i];
+                    }
+                    catch
+                    {
+                        _slackClient.PostAPIMessage("Unable to determine the poker name. Your parameters are probably wrong.", null, userID);
+                        return new EmptyResult();
+                    }
+
+                }
+                if (i == 2) //realname
+                {
+                    realName = parameters[i];
+                }
+            }
+            
+            User existingUser = _pokerContext.User.Where(u => u.SlackID.Equals(newPlayerSlackID)).FirstOrDefault();
+            if (existingUser != null)
             {
                 //account already exists.
-                string msg = "Account already exists.  UserName: " + u.UserName;
+                string msg = "Account already exists.  UserName: " + existingUser.UserName;
                 _slackClient.PostAPIMessage(msg, null, userID);
                 return new EmptyResult();
             }
 
-            string Player = "";
-            string RealName = "";
-            
-            string text = Form["Text"];
-            if (!string.IsNullOrEmpty(text))
+            if(pokerName.Length < 3 || pokerName.Length > 12)
             {
-                string[] parameters = text.Split(' ');
-                Player = parameters[0];
-                for (int i = 1; i < parameters.Length; i++)
-                {
-                    RealName += parameters[i];
-                }
-            }
-            if(Player.Length < 3 || Player.Length > 12)
-            {
-                string errmsg = $"{Player} is too long or too short. Trying something with more than 3 character or less than 12.";
+                string errmsg = $"{pokerName} is too long or too short. Trying something with more than 3 character or less than 12.";
                 _slackClient.PostAPIMessage(errmsg, null, userID);
                 return new EmptyResult();
             }
             string Location = "The internet";
             string Email = "not@real.address";
-            if(string.IsNullOrEmpty(Player))
+            if(string.IsNullOrEmpty(pokerName))
             {
-                Player = userName;
+                string errmsg = $"PokerName parameter is null. Unsure how this happened.";
+                _slackClient.PostAPIMessage(errmsg, null, userID);
+                return new EmptyResult();
             }
-            if(string.IsNullOrEmpty(RealName))
+            if(string.IsNullOrEmpty(realName))
             {
-                RealName = userName;
+                string errmsg = $"RealName parameter is null. Unsure how this happened.";
+                _slackClient.PostAPIMessage(errmsg, null, userID);
+                return new EmptyResult();
             }
-            var response =  _pokerRepo.CreateNewUser(userID, Player, RealName, Location, Email);
-            string message = "Poker account created!  UserName: " + Player + ". Password: password";
+            var response =  _pokerRepo.CreateNewUser(newPlayerSlackID, pokerName, realName, Location, Email);
+            string message = $"New poker account created for <@{newPlayerSlackName}>:  UserName: " + pokerName + ". Password: password";
             _slackClient.PostAPIMessage(message, null, userID);
+            message = $"Your poker account has been created: UserName: {pokerName} Password: password";
+            _slackClient.PostAPIMessage(message, null, newPlayerSlackID);
             message = "Please change your password using /changepw.";
-            _slackClient.PostAPIMessage(message, null, userID);
+            _slackClient.PostAPIMessage(message, null, newPlayerSlackID);
             return new EmptyResult();
         }
     }
