@@ -22,5 +22,7 @@ namespace PokerBot.Repository {
         bool IsHOF(string number);
         List<vHand> AddArtToHands(List<vHand> hands);
         bool isMainGame(string tableName);
+        string GetNextHand(string Number);
+        string GetPreviousHand(string Number);
     }
 }

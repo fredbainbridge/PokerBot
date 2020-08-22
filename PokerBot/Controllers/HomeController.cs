@@ -32,7 +32,7 @@ namespace PokerBot.Controllers
         public IActionResult Index()
         {
             List<vSession> sessions = _pokerRepository.GetSessions();
-            return View(sessions.OrderByDescending(s => s.Date).ToList());
+            return View(sessions.OrderByDescending(s => s.Date).Take(100).ToList());
         }
 
         public IActionResult Help()
@@ -49,7 +49,13 @@ namespace PokerBot.Controllers
             ViewBag.minSize = minSize;
             ViewBag.winner = winner;
             List<vHand> hands = _pokerRepository.GetHands(ID, minSize, winner);
-            
+            ViewBag.NextHand = "na";
+            ViewBag.PrevHand = "na";
+            if (hands.Count == 1)
+            {
+                ViewBag.NextHand = _pokerRepository.GetNextHand(ID);
+                ViewBag.PrevHand = _pokerRepository.GetPreviousHand(ID);
+            }
             return View(_pokerRepository.AddArtToHands(hands));
         }
         public IActionResult Privacy()
@@ -177,7 +183,15 @@ namespace PokerBot.Controllers
                         TimeSpan ts = DateTime.Now - p.TimeSeated;
                         if (ts.TotalSeconds > 5)
                         {
-                            string adminmessage = player + " added " + String.Format("{0:n0}",(changeInt * -1)) + " chips.";
+                            string adminmessage = "";
+                            if(changeInt == 1)
+                            {
+                                adminmessage = player + " added " + String.Format("{0:n0}", (changeInt * -1)) + " god damn chip!";
+                            }
+                            else
+                            {
+                                adminmessage = player + " added " + String.Format("{0:n0}", (changeInt * -1)) + " chips.";
+                            }
                             Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + adminmessage); 
                             _pokerRepository.SendAdminMessage(adminmessage, source);
                         }

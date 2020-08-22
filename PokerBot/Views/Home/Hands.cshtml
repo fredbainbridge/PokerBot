@@ -22,6 +22,23 @@
             <tr>
                 <td>
                     <table>
+                        @if (!(ViewBag.PrevHand.Equals("na") && ViewBag.NextHand.Equals("na")))
+                        {
+                            <tr>
+                                <td>
+                                    @if (!ViewBag.PrevHand.Equals("na"))
+                                    {
+                                        @Html.ActionLink("Prev. Hand", "Hands", "Home", new { ID = ViewBag.PrevHand }, new { @class = "col-sm-2" });
+                                    }
+                                    @if (!ViewBag.NextHand.Equals("na"))
+                                    {
+                                        @Html.ActionLink("Next. Hand", "Hands", "Home", new { ID = ViewBag.NextHand }, new { @class = "col-sm-2" });
+                                    }
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        }
                         <tr>
                             <td>
                                 Hand
@@ -63,6 +80,25 @@
                     @Html.Raw(item.Data)
                 </td>
             </tr>
+            @if (!(ViewBag.PrevHand.Equals("na") && ViewBag.NextHand.Equals("na")))
+            {
+                <tr>
+                    <td>
+                        @if (!ViewBag.PrevHand.Equals("na"))
+                        {
+                            @Html.ActionLink("Prev. Hand", "Hands", "Home", new { ID = ViewBag.PrevHand }, new { @class = "col-sm-2" });
+                        }
+                        @if (!ViewBag.NextHand.Equals("na"))
+                        {
+                            @Html.ActionLink("Next. Hand", "Hands", "Home", new { ID = ViewBag.NextHand }, new { @class = "col-sm-2" });
+                        }
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            }
+
+        }
         }
     </tbody>
 </table>

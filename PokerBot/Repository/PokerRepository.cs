@@ -438,4 +438,31 @@ public class PokerRepository : IPokerRepository {
          
         return hands;
     }
+    public string GetNextHand(string Number) 
+    {
+        var hand = _pokerContext.Hand.Where(h => h.Number.Equals(Number)).FirstOrDefault() ;
+        if(hand != null)
+        {
+            var nextHand = _pokerContext.Hand.Where(h => h.ID == hand.ID + 1).FirstOrDefault();
+            if (nextHand != null)
+            {
+                return nextHand.Number;
+            }
+        }
+        return "na";
+    }
+    public string GetPreviousHand(string Number)
+    {
+        var hand = _pokerContext.Hand.Where(h => h.Number.Equals(Number)).FirstOrDefault();
+        if (hand != null)
+        {
+            var prevHand = _pokerContext.Hand.Where(h => h.ID == hand.ID - 1).FirstOrDefault();
+            if (prevHand != null)
+            {
+                return prevHand.Number;
+            }
+            return prevHand.Number;
+        }
+        return "na";
+    }
 }
