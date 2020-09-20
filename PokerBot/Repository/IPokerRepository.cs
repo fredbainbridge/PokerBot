@@ -5,6 +5,7 @@ namespace PokerBot.Repository {
     public interface IPokerRepository {
         List<Player> GetSeatedPlayers(string TableName);
         List<RingGamesGet> GetTable(string TableName = null);
+        void SendMessageToAllRingGames(string message);
         int OpenSeats(string TableName);
         string RemainingSeatsMessage(string TableName);
         void SetAvatarPath(string name, string path);

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
 using PokerMavensAPI;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PokerBot.Controllers
 {
@@ -211,7 +212,27 @@ namespace PokerBot.Controllers
                 
                 //update the table state with the new balanaces.
             }
-            
+            if (Form["Event"] == "TourneyRegister")
+            {
+                //Name, Player, Late, and Time.
+                string name = Form["Name"];
+                var player = Form["Player"];
+                message = $"{player} has registered for {name}!";
+                _pokerRepository.SendMessageToAllRingGames(message);
+            }
+            if (Form["Event"] == "TourneyUnregister")
+            {
+                string name = Form["Name"];
+                var player = Form["Player"];
+                message = $"{player} has unregistered for {name}!";
+                _pokerRepository.SendMessageToAllRingGames(message);
+            }
+            if (Form["Event"] == "TourneyStart")
+            {
+                string name = Form["Name"];
+                message = $"{name} has started!";
+                _pokerRepository.SendMessageToAllRingGames(message);
+            }
             if (!string.IsNullOrEmpty(message)) {
                 Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + message);
                 if(!_secrets.Silence()){
@@ -232,12 +253,42 @@ namespace PokerBot.Controllers
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         
-        public ActionResult HOF()
+        public ActionResult HOF(string tableName = "")
         {
-            var hands = _pokerRepository.GetHands(null, 10000, null)
-                .Where(h => !(h.TableName != null && _secrets.HOFExclusions().Contains(h.TableName)))
-                .OrderByDescending(h => h.Amount).Take(20).ToList();
-            return View(_pokerRepository.AddArtToHands(hands));
+            
+            var list = new List<SelectListItem> {
+                new SelectListItem { Value = "10/20", Text = "10/20" },
+                new SelectListItem { Value = "100/200", Text = "100/200" }
+            };
+
+            foreach (SelectListItem item in list)
+            {
+                if(item.Value == tableName)
+                {
+                    item.Selected = true;
+                }
+            }
+            ViewBag.Tables = list;
+            
+            if (string.IsNullOrEmpty(tableName) || tableName.Equals("10/20"))
+            {
+                var hands = _pokerRepository.GetHands(null, 10000, null)
+                    .Where(h => !(h.TableName != null && _secrets.HOFExclusions().Contains(h.TableName)))
+                    .OrderByDescending(h => h.Amount).Take(20).ToList();
+                return View(_pokerRepository.AddArtToHands(hands));
+            }
+            else
+            {
+                if(tableName.Equals("100/200"))
+                {
+                    var hands = _pokerRepository.GetHands(null, 10000, null)
+                        .Where(h => (h.TableName != null && h.TableName.Contains("100/200") ))
+                        .OrderByDescending(h => h.Amount).Take(20).ToList();
+                    return View(_pokerRepository.AddArtToHands(hands));
+                }
+                return View();
+            }
+            
         }
         public IActionResult Error()
         {

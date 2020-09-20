@@ -8,11 +8,19 @@
 <script src="//code.jquery.com/jquery-1.12.4.js"></script>
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
-    function headerClick() {
-        alert("BOOM");
-    }
+    $(document).ready(function () {
+        $("#Game").change(UpdateHof)
+        function UpdateHof() {
+            var selectedGame = $('#Game').children("option:selected").val();
+            location.href = '/home/HOF?tableName=' + selectedGame;
+        }
+        
+    })
+        
 </script>
 <h1>Hall of Fame</h1>
+
+@Html.DropDownList("Game", (List<SelectListItem>)ViewBag.Tables, htmlAttributes: new { @class = "form-control" })
 <table class="table">
     <tbody>
         <tr>
@@ -38,31 +46,31 @@
     <div class="col-3">Date</div>
     <div class="col-2">Hand</div>
 </div>
-@{ 
+@{
     int i = 0;
     foreach (var item in Model)
     {
         i++;
-    <div class="container">
-        <div class="header row bold" data-toggle="collapse" data-target="#details@(i.ToString())">
-            <div class="col-2">
-                @Html.DisplayFor(modelItem => item.Winner)
+        <div class="container">
+            <div class="header row bold" data-toggle="collapse" data-target="#details@(i.ToString())">
+                <div class="col-2">
+                    @Html.DisplayFor(modelItem => item.Winner)
+                </div>
+                <div class="col-2">
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </div>
+                <div class="col-3 flex-nowrap">
+                    @Html.DisplayFor(modelItem => item.Date)
+                </div>
+                <div class="col-2">
+                    @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
+                </div>
             </div>
-            <div class="col-2">
-                @Html.DisplayFor(modelItem => item.Amount)
-            </div>
-            <div class="col-3 flex-nowrap">
-                @Html.DisplayFor(modelItem => item.Date)
-            </div>
-            <div class="col-2">
-                @Html.ActionLink(item.Number, "Hands", "Home", new { ID = item.Number })
+            <div class="collapse" id="details@(i.ToString())">
+                <div colspan=12>
+                    @Html.Raw(item.Data)
+                </div>
             </div>
         </div>
-        <div class="collapse" id="details@(i.ToString())">
-            <div colspan=12>
-                @Html.Raw(item.Data)
-            </div>
-        </div>
-    </div>
     }
 }

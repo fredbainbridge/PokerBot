@@ -272,6 +272,15 @@ public class PokerRepository : IPokerRepository {
         return ringGames;
         
     }
+    public void SendMessageToAllRingGames(string message)
+    {
+        var tables = GetTable();
+        foreach (var t in tables)
+        {
+            Console.WriteLine(message);
+            SendAdminMessage(message, t.Name);
+        }
+    }
     public int OpenSeats(string TableName) {
         string maxPlayers = GetTable(TableName).FirstOrDefault().Seats;
         int intMaxPlayers;
@@ -331,7 +340,15 @@ public class PokerRepository : IPokerRepository {
     public List<Session> UpdateBalances()
     {
         List<Session> sessions = new List<Session>();
-        List<RingGamesGet> tables = GetTable();
+        try
+        {
+            List<RingGamesGet> tables = GetTable();
+        }
+        catch
+        {
+            Console.WriteLine("Waiting for server to start");
+            return null;
+        }
         bool gameOn = false;
         gameOn = AnySeatedPlayers(); 
         if (gameOn)
