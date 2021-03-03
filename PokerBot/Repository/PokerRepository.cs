@@ -365,7 +365,14 @@ public class PokerRepository : IPokerRepository {
             {
                 User u = _pokerContext.User.Where(u => u.UserName.Equals(accountList.Player[i])).FirstOrDefault();
                 Console.WriteLine("Recording session for " + u.RealName);
-                int balance = Int32.Parse(accountList.Balance[i]);
+                bool success = false;
+                int balance;
+                success = Int32.TryParse(accountList.Balance[i], out balance);
+                if(!success)
+                {
+                    Console.WriteLine("Non integer balance found, is the smallest chip size set correctly on the table?");
+                    continue;
+                }
                 int chips = balance - 100000;
                 Session s = new Session();
                 s.Chips = chips;
