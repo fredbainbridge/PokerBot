@@ -8,9 +8,26 @@ using System;
 public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
     private PokerDBContext _pokerContext;
+    
     public PokerRepository(ISecrets Secrets, PokerDBContext PokerContext) {
         _secrets = Secrets;
         _pokerContext = PokerContext;
+    }
+    public bool AnySeatedOrWaitingPlayers()
+    {
+        if(AnySeatedRingGamePlayers())
+        {
+            return true;
+        }
+        if(AnySeatedTournamentPlayers())
+        {
+            return true;
+        }
+        if(AnyWaitingTournamentPlayers())
+        {
+            return true;
+        }
+        return false;
     }
     public bool ChangePassword(string SlackID, string password)
     {
@@ -88,29 +105,74 @@ public class PokerRepository : IPokerRepository {
         dict.Add("Fields", "RealName,Balance,Player");
         return client.Post(dict);
     }
-    public List<Player> GetSeatedPlayers(string TableName) {
-        var client = new MaevenClient<RingGamesPlaying>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string,string>();
-        dict.Add("Command", "RingGamesPlaying");
-        dict.Add("Name", TableName);
-        var request = client.Post(dict);
+    public List<Player> GetSeatedPlayers(string TableName, string Type = "RingGame") {
         List<Player> players = new List<Player>();
-        for(int i = 0; i<request.Count; i++) {
-            Player p = new Player();
-            p.Name = request.Player[i];
-            p.Chips = request.Chips[i];
-            players.Add(p);
+        if(Type.Equals("RingGame"))
+        {
+            var client = new MaevenClient<RingGamesPlaying>(_secrets.PokerURL(), _secrets.Password());
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Command", "RingGamesPlaying");
+            dict.Add("Name", TableName);
+            var request = client.Post(dict);
+            for (int i = 0; i < request.Count; i++)
+            {
+                Player p = new Player();
+                p.Name = request.Player[i];
+                p.Chips = request.Chips[i];
+                players.Add(p);
+            }
+        }
+        if(Type.Equals("Tournament"))
+        {
+            var client = new MaevenClient<TournamentsPlaying>(_secrets.PokerURL(), _secrets.Password());
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Command", "TournamentsPlaying");
+            dict.Add("Name", TableName);
+            var request = client.Post(dict);
+            for (int i = 0; i < request.Count; i++)
+            {
+                Player p = new Player();
+                p.Name = request.Player[i];
+                p.Chips = request.Chips[i];
+                players.Add(p);
+            }
         }
         return players;
     }
-    public bool AnySeatedPlayers()
+    public bool AnySeatedRingGamePlayers()
+    {
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        var rClient = new MaevenClient<RingGamesList>(_secrets.PokerURL(), _secrets.Password());
+        dict = new Dictionary<string, string>();
+        dict.Add("Command", "RingGamesList");
+        dict.Add("Fields", "Name");
+        var ringGames = rClient.Post(dict);
+        if(ringGames.Name != null)
+        {
+            for (int i = 0; i < ringGames.Name.Count(); i++)
+            {
+                if (GetSeatedPlayers(ringGames.Name[i]).Count() > 0)
+                {
+                    return true;
+                }
+            }
+        }          
+        return false;
+    }
+    public TournamentsList Tournaments()
     {
         var client = new MaevenClient<TournamentsList>(_secrets.PokerURL(), _secrets.Password());
         Dictionary<string, string> dict = new Dictionary<string, string>();
         dict.Add("Command", "TournamentsList");
         dict.Add("Fields", "Name");
-        var request = client.Post(dict);
-        if(request.Name != null)
+        return client.Post(dict);
+    }
+    
+    public bool AnySeatedTournamentPlayers()
+    {
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        var request = Tournaments();
+        if (request.Name != null)
         {
             for (int i = 0; i < request.Name.Count(); i++)
             {
@@ -118,30 +180,36 @@ public class PokerRepository : IPokerRepository {
                 dict = new Dictionary<string, string>();
                 dict.Add("Command", "TournamentsPlaying");
                 dict.Add("Name", request.Name[i]);
-                var tRequest = client.Post(dict);
+                var playingTournament = tClient.Post(dict);
 
-                if(tRequest.Name != null)
+                if (playingTournament.Player.Count != 0)
                 {
                     return true;
                 }
             }
         }
-        
-        var rClient = new MaevenClient<RingGamesList>(_secrets.PokerURL(), _secrets.Password());
-        dict = new Dictionary<string, string>();
-        dict.Add("Command", "RingGamesList");
-        dict.Add("Fields", "Name");
-        request = client.Post(dict);
-        if(request.Name != null)
+        return false;
+    }
+    public bool AnyWaitingTournamentPlayers()
+    {
+        var request = Tournaments();
+        Dictionary<string, string> dict;
+        if (request.Name != null)
         {
             for (int i = 0; i < request.Name.Count(); i++)
             {
-                if (GetSeatedPlayers(request.Name[i]).Count() > 0)
+                var tClient = new MaevenClient<TournamentsWaiting>(_secrets.PokerURL(), _secrets.Password());
+                dict = new Dictionary<string, string>();
+                dict.Add("Command", "TournamentsWaiting");
+                dict.Add("Name", request.Name[i]);
+                var tRequest = tClient.Post(dict);
+
+                if (tRequest.Count != 0)
                 {
                     return true;
                 }
             }
-        }          
+        }
         return false;
     }
     public bool isMainGame(string tableName)
@@ -350,7 +418,7 @@ public class PokerRepository : IPokerRepository {
             return null;
         }
         bool gameOn = false;
-        gameOn = AnySeatedPlayers(); 
+        gameOn = AnySeatedOrWaitingPlayers(); 
         if (gameOn)
         {
             Console.WriteLine("A game is happening, balance changes will not be recorded.");

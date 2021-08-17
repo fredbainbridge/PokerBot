@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerMavensAPI", "Poker-MavensAPI\PokerMavensAPI.csproj", "{4F541605-24E5-4971-A803-5B066A546E42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerMavensAPI", "Poker-MavensAPI\PokerMavensAPI.csproj", "{4F541605-24E5-4971-A803-5B066A546E42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerBot", "PokerBot\PokerBot.csproj", "{4DD74DB8-D228-42E0-8A4B-9F3A94317DA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerBot", "PokerBot\PokerBot.csproj", "{4DD74DB8-D228-42E0-8A4B-9F3A94317DA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4F541605-24E5-4971-A803-5B066A546E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +41,11 @@ Global
 		{4DD74DB8-D228-42E0-8A4B-9F3A94317DA0}.Release|x64.Build.0 = Release|Any CPU
 		{4DD74DB8-D228-42E0-8A4B-9F3A94317DA0}.Release|x86.ActiveCfg = Release|Any CPU
 		{4DD74DB8-D228-42E0-8A4B-9F3A94317DA0}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C648FC87-AE55-4879-8F5E-DAF064590B65}
 	EndGlobalSection
 EndGlobal

@@ -3,7 +3,7 @@ using PokerMavensAPI;
 using System.Collections.Generic;
 namespace PokerBot.Repository {
     public interface IPokerRepository {
-        List<Player> GetSeatedPlayers(string TableName);
+        List<Player> GetSeatedPlayers(string TableName, string Type = "RingGame");
         List<RingGamesGet> GetTable(string TableName = null);
         void SendMessageToAllRingGames(string message);
         int OpenSeats(string TableName);
@@ -17,7 +17,10 @@ namespace PokerBot.Repository {
         List<UserBalance> GetUserBalances();
         User CreateNewUser(string SlackID, string Player, string RealName, string Location, string Email);
         bool ChangePassword(string SlackID, string password);
-        bool AnySeatedPlayers();
+        bool AnySeatedRingGamePlayers();
+        bool AnySeatedTournamentPlayers();
+        bool AnySeatedOrWaitingPlayers();
+        bool AnyWaitingTournamentPlayers();
         List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null);
         List<Session> UpdateBalances();
         bool IsHOF(string number);

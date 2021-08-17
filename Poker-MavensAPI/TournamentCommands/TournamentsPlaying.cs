@@ -12,9 +12,6 @@ namespace PokerMavensAPI
         /// <summary>  get the JSON response for Result </summary>
         public string Result { get; set; }
 
-        /// <summary>  name of tournament  </summary>
-        public string Name { get; set; }
-
         /// <summary>  get the JSON response for Result </summary>
         public string Number { get; set; }
 
@@ -22,7 +19,7 @@ namespace PokerMavensAPI
         public string Time { get; set; }
 
         /// <summary>  get the JSON response for Result </summary>
-        public string Count { get; set; }
+        public int Count { get; set; }
 
         /// <summary>  Used to get Name from JSON reply</summary>
         public List<string> Player { get; set; }
@@ -34,7 +31,7 @@ namespace PokerMavensAPI
         public List<string> Seat { get; set; }
 
         /// <summary>  Used to get Name from JSON reply</summary>
-        public List<string> Chips { get; set; }
+        public List<double> Chips { get; set; }
 
         /// <summary>  Used to get Name from JSON reply</summary>
         public List<string> Rebuys { get; set; }

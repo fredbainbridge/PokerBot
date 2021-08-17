@@ -13,6 +13,7 @@ namespace PokerMavensAPI
         /// <summary>  get the JSON response for Result </summary>
         public string Result { get; set; }
 
+        public int Count { get; set; }
         /// <summary>  get the JSON response for Result </summary>
         public string Error { get; set; }
 
