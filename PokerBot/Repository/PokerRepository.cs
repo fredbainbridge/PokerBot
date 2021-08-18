@@ -388,22 +388,22 @@ public class PokerRepository : IPokerRepository {
         {   
             if(minSize != 0 )
             {
-                return _pokerContext.vHand.Where(h => h.Amount >= minSize && h.Winner.Equals(winner)).OrderByDescending(h => h.Number).ToList();
+                return _pokerContext.vHand.Where(h => h.Amount >= minSize && h.Winner.Equals(winner)).OrderByDescending(h => h.Date).ToList();
             }
             else
             {
-                return _pokerContext.vHand.Where(h => h.Winner.ToUpper().Equals(winner.ToUpper())).OrderByDescending(h => h.Number).ToList();
+                return _pokerContext.vHand.Where(h => h.Winner.ToUpper().Equals(winner.ToUpper())).OrderByDescending(h => h.Date).ToList();
             }
         }
         if(!string.IsNullOrEmpty(handID))
         {
-            return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).OrderByDescending(h => h.Number).ToList();
+            return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).OrderByDescending(h => h.Date).ToList();
         }
         if(minSize != 0)
         {
-            return _pokerContext.vHand.Where(h => h.Amount >= minSize).OrderByDescending(h => h.Number).ToList();
+            return _pokerContext.vHand.Where(h => h.Amount >= minSize).OrderByDescending(h => h.Date).ToList();
         }
-        return _pokerContext.vHand.OrderByDescending(h => h.Number).Take(1000).ToList();
+        return _pokerContext.vHand.OrderByDescending(h => h.Date).Take(1000).ToList();
     }
     public List<Session> UpdateBalances()
     {
