@@ -270,6 +270,25 @@ namespace PokerBot.Controllers
             _slackClient.PostAPIMessage(message, null, userID);
             return new EmptyResult();
         }
+        [HttpPost]
+        public IActionResult Update(IFormCollection Form) {
+            string text = Form["Text"];
+            string[] parameters = text.Split(' ');
+            if(parameters.Count() != 2) {
+                return BadRequest("Wrong number of paramters.");
+            }
+            string slackID = parameters[0].Trim('<').Trim('>').Trim('@').Split('|')[0];
+            string slackUserName = parameters[0].Trim('<').Trim('>').Trim('@').Split('|')[1];
+            string pokerAlias = parameters[1];
+            var user = _pokerContext.User.Where(u => u.UserName.Equals(pokerAlias)).FirstOrDefault();
+            if(user == null) {
+                return BadRequest("User not found.");
+            }
+            user.SlackID = slackID;
+            user.SlackUserName = slackUserName;
+            _pokerContext.SaveChanges();
+            return new OkResult();
+        }
         public IActionResult Register(IFormCollection Form)
         {
 

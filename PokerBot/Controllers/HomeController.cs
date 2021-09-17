@@ -126,28 +126,37 @@ namespace PokerBot.Controllers
 
             }
             if(Form["Event"] == "Hand") {
+                int Unspeakable = 100000; int Huge = 50000; int Monster = 20000;
                 string HandNumber = Form["Hand"];
                 string TableName = Form["Name"];
                 if (!_pokerRepository.isMainGame(TableName))
                 {
                     return Json(new EmptyResult());
                 }
+                
                 //get the hand number.
                 //get the hand history
                 //determine if its a monster hand!!
                 Hand hand = _pokerRepository.GetHandHistory(HandNumber);
+                if (TableName.Contains("100/200"))
+                {
+                    Unspeakable = Unspeakable * 10;
+                    Huge = Huge * 10;
+                    Monster = Monster + 10;
+
+                }
                 string handURL = websiteURL + "/Home/Hands/" + HandNumber;
                 string type = "";
 
-                if (hand.WinningAmount > 100000)
+                if (hand.WinningAmount > Unspeakable)
                 {
                     message = "Something unspeakable has happened! " + handURL;
                 }
-                else if (hand.WinningAmount > 50000)
+                else if (hand.WinningAmount > Huge)
                 {
                     type = "FUCKING HUGE";
                 }
-                else if (hand.WinningAmount > 20000)
+                else if (hand.WinningAmount > Monster)
                 {
                     type = "MONSTER";
                 }

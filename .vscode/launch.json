@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/PokerBot/bin/Debug/netcoreapp3.0/PokerBot.exe",
+            "program": "${workspaceFolder}/PokerBot/bin/Debug/netcoreapp3.1/PokerBot.exe",
             "args": [],
             "cwd": "${workspaceFolder}/PokerBot",
             "stopAtEntry": false,
