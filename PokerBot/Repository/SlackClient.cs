@@ -3,6 +3,7 @@ using System;
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
+using System.Collections.Generic;
 
 //A simple C# class to post messages to a Slack channel
 //Note: This class uses the Newtonsoft Json.NET serializer available via NuGet
@@ -10,7 +11,7 @@ using System.Text;
 namespace PokerBot.Repository {
 	public class SlackClient : ISlackClient
 	{
-		private Uri _uri;
+		private List<Uri> _uris;
 		private readonly Encoding _encoding = new UTF8Encoding();
         private string _token;
         private ISecrets _secrets;
@@ -18,7 +19,10 @@ namespace PokerBot.Repository {
 		{
             _token = secrets.Token();
             _secrets = secrets;
-			_uri = new Uri(secrets.SlackURL());
+            _uris = new List<Uri>();
+            foreach(var url in secrets.SlackURLs()) {
+                _uris.Add(new Uri(url));
+            }
 		}
         
 		
@@ -53,21 +57,22 @@ namespace PokerBot.Repository {
         public void PostWebhookMessage(Payload payload)
         {
             string payloadJson = JsonConvert.SerializeObject(payload);
+            foreach(var _uri in _secrets.SlackURLs()) {
+                using (WebClient client = new WebClient())
+                {
+                    NameValueCollection data = new NameValueCollection();
+                    data["payload"] = payloadJson;
 
-            using (WebClient client = new WebClient())
-            {
-                NameValueCollection data = new NameValueCollection();
-                data["payload"] = payloadJson;
+                    var response = client.UploadValues(_uri, "POST", data);
 
-                var response = client.UploadValues(_uri, "POST", data);
-
-                //The response text is usually "ok"
-                string responseText = _encoding.GetString(response);
-            }
+                    //The response text is usually "ok"
+                    string responseText = _encoding.GetString(response);
+                }
+            }        
         }
         public void PostAPIMessage(Payload payload)
 		{
-            _uri = new Uri("https://slack.com/api/chat.postMessage");
+            var _uri = new Uri("https://slack.com/api/chat.postMessage");
             string payloadJson = JsonConvert.SerializeObject(payload);
 			
 			using (WebClient client = new WebClient())

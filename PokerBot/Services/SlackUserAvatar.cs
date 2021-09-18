@@ -52,6 +52,9 @@ namespace PokerBot.Services
                     {
                         string responseBody = await client.GetStringAsync(uri);
                         SlackUser u = SlackUser.FromJson(responseBody);
+                        if(u.Profile == null) {
+                            continue;
+                        }
                         if(!u.Profile.AvatarHash.Equals(user.AvatarHash) || !File.Exists(_secrets.AvatarDir() + user.SlackID + ".png"))
                         {
                             MagickImage i = new MagickImage(await client.GetStreamAsync(u.Profile.Image48));
@@ -76,12 +79,12 @@ namespace PokerBot.Services
                         Console.WriteLine("Message :{0} ", e.Message);
                     }
                     _pokerRepo.SetAvatarPath(user.UserName, _secrets.AvatarDir() + user.SlackID + ".png");
-                    await Task.Delay(20000, cancellationToken);
+                    await Task.Delay(2000, cancellationToken);
                 }
                     
                 _pokerDB.SaveChanges();                
             }
-            await Task.Delay(9000000, cancellationToken); //very long time
+            await Task.Delay(900000, cancellationToken); //very long time
         }
     }
 }
