@@ -23,6 +23,9 @@ namespace PokerBot.Repository
         }
         public string GetLastMessage()
         {
+            if(_lastMessage == null) {
+                return "";
+            }
             return _lastMessage;
         }
         public DateTime GameStart()

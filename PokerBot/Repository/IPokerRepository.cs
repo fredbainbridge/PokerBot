@@ -21,9 +21,9 @@ namespace PokerBot.Repository {
         bool AnySeatedTournamentPlayers();
         bool AnySeatedOrWaitingPlayers();
         bool AnyWaitingTournamentPlayers();
-        List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null);
+        List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null, string tableName = null);
         List<Session> UpdateBalances();
-        bool IsHOF(string number);
+        bool IsHOF(Hand hand);
         List<vHand> AddArtToHands(List<vHand> hands);
         bool isMainGame(string tableName);
         string GetNextHand(string Number);

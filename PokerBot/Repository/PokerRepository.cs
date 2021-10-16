@@ -381,29 +381,26 @@ public class PokerRepository : IPokerRepository {
         client.Post(dict);
 
     }
-    public List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null) 
+    public List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null, string tableName = null) 
     {
-        
+        IQueryable<vHand> query = _pokerContext.vHand;
+
         if(!string.IsNullOrEmpty(winner))
-        {   
-            if(minSize != 0 )
-            {
-                return _pokerContext.vHand.Where(h => h.Amount >= minSize && h.Winner.Equals(winner)).OrderByDescending(h => h.Date).ToList();
-            }
-            else
-            {
-                return _pokerContext.vHand.Where(h => h.Winner.ToUpper().Equals(winner.ToUpper())).OrderByDescending(h => h.Date).ToList();
-            }
+        {
+            query = query.Where(h => h.Winner.ToUpper().Equals(winner.ToUpper()));   
         }
         if(!string.IsNullOrEmpty(handID))
         {
-            return _pokerContext.vHand.Where(h => h.Number.Equals(handID)).OrderByDescending(h => h.Date).ToList();
+            query = query.Where(h => h.Number.Equals(handID));
         }
         if(minSize != 0)
         {
-            return _pokerContext.vHand.Where(h => h.Amount >= minSize).OrderByDescending(h => h.Date).ToList();
+            query = query.Where(h => h.Amount >= minSize);
         }
-        return _pokerContext.vHand.OrderByDescending(h => h.Date).Take(1000).ToList();
+        if(!string.IsNullOrEmpty(tableName)) {
+            query = query.Where(h => h.TableName != null && h.TableName.Equals(tableName));
+        }
+        return query.OrderByDescending(h => h.Date).Take(1000).ToList();
     }
     public List<Session> UpdateBalances()
     {
@@ -458,15 +455,12 @@ public class PokerRepository : IPokerRepository {
         }
         return sessions;
     }
-    public bool IsHOF(string number)
+    public bool IsHOF(Hand hand)
     {
-        var hands = GetHands(null, 10000, null)
-            .Where(h => !_secrets.HOFExclusions().Contains(h.TableName))
-            .OrderByDescending(h => h.Amount)
-            .Take(20);
+        var hands = GetHands(null, 10000, null, hand.TableName);
         foreach(var h in hands)
         {
-            if (h.Number.Equals(number))
+            if (h.Number.Equals(hand.Number))
             {
                 return true;
             }

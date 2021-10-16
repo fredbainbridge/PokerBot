@@ -142,7 +142,7 @@ namespace PokerBot.Controllers
                 {
                     Unspeakable = Unspeakable * 10;
                     Huge = Huge * 10;
-                    Monster = Monster + 10;
+                    Monster = Monster * 10;
 
                 }
                 string handURL = websiteURL + "/Home/Hands/" + HandNumber;
@@ -165,7 +165,7 @@ namespace PokerBot.Controllers
                     string amount = String.Format("{0:n0}", hand.WinningAmount);
                     message = hand.Winner.UserName + " just won a " + type + $" pot at {TableName}! (" + amount + ") " + handURL;
                 }
-                if(_pokerRepository.IsHOF(hand.Number))
+                if(_pokerRepository.IsHOF(hand))
                 {
                     if (!_secrets.Silence())
                     {
