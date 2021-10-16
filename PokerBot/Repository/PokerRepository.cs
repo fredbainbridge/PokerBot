@@ -398,7 +398,8 @@ public class PokerRepository : IPokerRepository {
             query = query.Where(h => h.Amount >= minSize);
         }
         if(!string.IsNullOrEmpty(tableName)) {
-            query = query.Where(h => h.TableName != null && h.TableName.Equals(tableName));
+            string gameType = tableName.Split("(").First().Trim();
+            query = query.Where(h => h.TableName != null && h.TableName.StartsWith(gameType));
         }
         return query.OrderByDescending(h => h.Date).Take(1000).ToList();
     }
@@ -457,7 +458,9 @@ public class PokerRepository : IPokerRepository {
     }
     public bool IsHOF(Hand hand)
     {
-        var hands = GetHands(null, 10000, null, hand.TableName);
+        var hands = GetHands(null, 10000, null, hand.TableName)
+            .OrderByDescending(h => h.Amount)
+            .Take(20);
         foreach(var h in hands)
         {
             if (h.Number.Equals(hand.Number))

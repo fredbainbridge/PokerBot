@@ -266,8 +266,9 @@ namespace PokerBot.Controllers
         {
             
             var list = new List<SelectListItem> {
-                new SelectListItem { Value = "10/20", Text = "10/20" },
-                new SelectListItem { Value = "100/200", Text = "100/200" }
+                new SelectListItem { Value = "Cash Game 10/20 No Limit", Text = "Cash Game 10/20 No Limit" },
+                new SelectListItem { Value = "Cash Game 100/200 No Limit", Text = "Cash Game 100/200 No Limit" },
+                new SelectListItem { Value = "Cash Game 10/20 PLO", Text = "Cash Game 10/20 PLO" }
             };
 
             foreach (SelectListItem item in list)
@@ -278,26 +279,10 @@ namespace PokerBot.Controllers
                 }
             }
             ViewBag.Tables = list;
-            
-            if (string.IsNullOrEmpty(tableName) || tableName.Equals("10/20"))
-            {
-                var hands = _pokerRepository.GetHands(null, 10000, null)
-                    .Where(h => !(h.TableName != null && _secrets.HOFExclusions().Contains(h.TableName)))
-                    .OrderByDescending(h => h.Amount).Take(20).ToList();
-                return View(_pokerRepository.AddArtToHands(hands));
-            }
-            else
-            {
-                if(tableName.Equals("100/200"))
-                {
-                    var hands = _pokerRepository.GetHands(null, 10000, null)
-                        .Where(h => (h.TableName != null && h.TableName.Contains("100/200") ))
-                        .OrderByDescending(h => h.Amount).Take(20).ToList();
-                    return View(_pokerRepository.AddArtToHands(hands));
-                }
-                return View();
-            }
-            
+            if(string.IsNullOrEmpty(tableName)) { tableName = "Cash Game 10/20 No Limit";}
+            var hands = _pokerRepository.GetHands(null, 10000, null, tableName)
+                .OrderByDescending(h => h.Amount).Take(20).ToList();
+            return View(_pokerRepository.AddArtToHands(hands));            
         }
         public IActionResult Error()
         {
