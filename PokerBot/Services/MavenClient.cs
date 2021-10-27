@@ -1,21 +1,19 @@
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net;
-using System.Text;
-using System.Web;
 using System.Threading.Tasks;
-namespace PokerMavensAPI {
-    public class MaevenClient<T>
+using PokerBot.Repository;
+
+namespace PokerBot.Services {
+    public class MavenClient<T> : IMavenClient<T>
     {
         private static readonly HttpClient client = new HttpClient(); 
         public string URL  {get; set;}
         private string Password {get; set;}
-        public MaevenClient(string Url, string Password) {
-            this.URL = Url;
-            this.Password = Password;
+        public MavenClient(ISecrets secrets) {
+            this.URL = secrets.PokerURL();
+            this.Password = secrets.Password();
         }
         private async Task<string> Request(Dictionary<string, string> Parameters) 
         {
