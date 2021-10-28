@@ -15,12 +15,7 @@ namespace PokerBot.Repository {
         void SetPrimaryBalance(string Name, int Balance);
         List<vSession> GetSessions(int? Top = null);
         List<UserBalance> GetUserBalances();
-        User CreateNewUser(string SlackID, string Player, string RealName, string Location, string Email);
-        bool ChangePassword(string SlackID, string password);
-        bool AnySeatedRingGamePlayers();
-        bool AnySeatedTournamentPlayers();
         bool AnySeatedOrWaitingPlayers();
-        bool AnyWaitingTournamentPlayers();
         List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null, string tableName = null);
         List<Session> UpdateBalances();
         bool IsHOF(Hand hand);

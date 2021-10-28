@@ -4,70 +4,39 @@ using PokerMavensAPI;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using PokerBot.Repository.Mavens;
 
 public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
     private PokerDBContext _pokerContext;
-    
-    public PokerRepository(ISecrets Secrets, PokerDBContext PokerContext) {
+    private IMavenRingGamesPlaying _mavenRingGamesPlaying;
+    private IMavenTournamentsPlaying _mavenTournamentsPlaying;
+    private IMavenTournamentsWaiting _mavenTournamentsWaiting;
+
+    public PokerRepository(ISecrets Secrets, PokerDBContext PokerContext, IMavenRingGamesPlaying mavenRingGamesPlaying, IMavenTournamentsPlaying mavenTournamentsPlaying, IMavenTournamentsWaiting mavenTournamentsWaiting) {
         _secrets = Secrets;
         _pokerContext = PokerContext;
+        _mavenRingGamesPlaying = mavenRingGamesPlaying;
+        _mavenTournamentsPlaying = mavenTournamentsPlaying;
+        _mavenTournamentsWaiting = mavenTournamentsWaiting;
     }
     public bool AnySeatedOrWaitingPlayers()
     {
-        if(AnySeatedRingGamePlayers())
+        if(_mavenRingGamesPlaying.AnySeatedRingGamePlayers())
         {
             return true;
         }
-        if(AnySeatedTournamentPlayers())
+        if(_mavenTournamentsPlaying.AnySeatedTournamentPlayers())
         {
             return true;
         }
-        if(AnyWaitingTournamentPlayers())
+        if(_mavenTournamentsWaiting.AnyWaitingTournamentPlayers())
         {
             return true;
         }
         return false;
     }
-    public bool ChangePassword(string SlackID, string password)
-    {
-        var client = new MaevenClient<AccountsEdit>(_secrets.PokerURL(), _secrets.Password());
-        User u = _pokerContext.User.Where(u => u.SlackID.Equals(SlackID)).FirstOrDefault();
-        if(u == null)
-        {
-            return false; 
-        }
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "AccountsEdit");
-        dict.Add("Player", u.UserName);
-        dict.Add("PW", password);
-        var response = client.Post(dict);
-        return true;
-    }
-    public User CreateNewUser(string SlackID, string Player, string RealName, string Location, string Email)
-    {
-        var client = new MaevenClient<AccountsAdd>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "AccountsAdd");
-        dict.Add("Player", Player);
-        dict.Add("RealName", RealName);
-        dict.Add("PW", "password");
-        dict.Add("Location", Location);
-        dict.Add("Email", Email);
-        var response = client.Post(dict);
-
-        User u = new User();
-        u.EmailAddress = Email;
-        u.RealName = RealName;
-        u.SlackID = SlackID;
-        u.UserName = Player;
-        _pokerContext.User.Add(u);
-        _pokerContext.SaveChanges();
-
-        
-        return u;
-
-    }
+    
     public List<UserBalance> GetUserBalances()
     {
         return _pokerContext.UserBalance.ToList();
@@ -109,109 +78,14 @@ public class PokerRepository : IPokerRepository {
         List<Player> players = new List<Player>();
         if(Type.Equals("RingGame"))
         {
-            var client = new MaevenClient<RingGamesPlaying>(_secrets.PokerURL(), _secrets.Password());
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("Command", "RingGamesPlaying");
-            dict.Add("Name", TableName);
-            var request = client.Post(dict);
-            for (int i = 0; i < request.Count; i++)
-            {
-                Player p = new Player();
-                p.Name = request.Player[i];
-                p.Chips = request.Chips[i];
-                players.Add(p);
-            }
+            players.AddRange(_mavenRingGamesPlaying.GetSeatedPlayers(TableName));
         }
         if(Type.Equals("Tournament"))
         {
-            var client = new MaevenClient<TournamentsPlaying>(_secrets.PokerURL(), _secrets.Password());
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("Command", "TournamentsPlaying");
-            dict.Add("Name", TableName);
-            var request = client.Post(dict);
-            for (int i = 0; i < request.Count; i++)
-            {
-                Player p = new Player();
-                p.Name = request.Player[i];
-                p.Chips = request.Chips[i];
-                players.Add(p);
-            }
+            players.AddRange(_mavenTournamentsPlaying.GetSeatedPlayers(TableName));
         }
         return players;
-    }
-    public bool AnySeatedRingGamePlayers()
-    {
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        var rClient = new MaevenClient<RingGamesList>(_secrets.PokerURL(), _secrets.Password());
-        dict = new Dictionary<string, string>();
-        dict.Add("Command", "RingGamesList");
-        dict.Add("Fields", "Name");
-        var ringGames = rClient.Post(dict);
-        if(ringGames.Name != null)
-        {
-            for (int i = 0; i < ringGames.Name.Count(); i++)
-            {
-                if (GetSeatedPlayers(ringGames.Name[i]).Count() > 0)
-                {
-                    return true;
-                }
-            }
-        }          
-        return false;
-    }
-    public TournamentsList Tournaments()
-    {
-        var client = new MaevenClient<TournamentsList>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "TournamentsList");
-        dict.Add("Fields", "Name");
-        return client.Post(dict);
-    }
-    
-    public bool AnySeatedTournamentPlayers()
-    {
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        var request = Tournaments();
-        if (request.Name != null)
-        {
-            for (int i = 0; i < request.Name.Count(); i++)
-            {
-                var tClient = new MaevenClient<TournamentsPlaying>(_secrets.PokerURL(), _secrets.Password());
-                dict = new Dictionary<string, string>();
-                dict.Add("Command", "TournamentsPlaying");
-                dict.Add("Name", request.Name[i]);
-                var playingTournament = tClient.Post(dict);
-
-                if (playingTournament.Player.Count != 0)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    public bool AnyWaitingTournamentPlayers()
-    {
-        var request = Tournaments();
-        Dictionary<string, string> dict;
-        if (request.Name != null)
-        {
-            for (int i = 0; i < request.Name.Count(); i++)
-            {
-                var tClient = new MaevenClient<TournamentsWaiting>(_secrets.PokerURL(), _secrets.Password());
-                dict = new Dictionary<string, string>();
-                dict.Add("Command", "TournamentsWaiting");
-                dict.Add("Name", request.Name[i]);
-                var tRequest = tClient.Post(dict);
-
-                if (tRequest.Count != 0)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    }    
     public bool isMainGame(string tableName)
     {
         foreach(string mainGamename in _secrets.GameName())
