@@ -1,15 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using PokerBot.Models;
 using PokerMavensAPI;
 
 
 namespace PokerBot.Repository.Mavens {
-    public class AccountsAdd {
-        private IMavensClient<AccountsAdd> _client;
+    public interface IMavenAccountsEdit {
+        bool ChangePassword(string SlackID, string password);
+    }
+    public class MavenAccountsEdit : IMavenAccountsEdit{
+        private HttpClient _client;
         private PokerDBContext _pokerContext;
-        public AccountsAdd(IMavensClient<AccountsAdd> client, PokerDBContext PokerContext) {
+        private ISecrets _secrets;
+        public MavenAccountsEdit(HttpClient client, PokerDBContext pokerContext, ISecrets secrets) {
             _client = client;
+            _pokerContext = pokerContext;
+            _secrets = secrets;
         }
 
         public bool ChangePassword(string SlackID, string password)
@@ -23,7 +30,8 @@ namespace PokerBot.Repository.Mavens {
             dict.Add("Command", "AccountsEdit");
             dict.Add("Player", u.UserName);
             dict.Add("PW", password);
-            var response = _client.Post(dict);
+            MavenClient<AccountsEdit> mClient = new MavenClient<AccountsEdit>(_secrets);
+            var response = mClient.Post(_client, dict);
             return true;
         }
     }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
-namespace PokerBot.Services {
+
+namespace PokerBot.Repository.Mavens {
     public interface IMavenClient<T>
     {
-        T Post(Dictionary<string,string> Parameters);
+        T Post(HttpClient client, Dictionary<string,string> Parameters);
     }
 
 }

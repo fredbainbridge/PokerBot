@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PokerBot.Models;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
-
+using PokerBot.Repository.Mavens;
 
 namespace PokerBot.Controllers
 {
@@ -13,13 +13,19 @@ namespace PokerBot.Controllers
         private ISlackClient _slackClient;
         private PokerDBContext _pokerContext;
         private IPokerRepository _pokerRepo;
+        private IMavenAccountsEdit _mavensAccountEdit;
+        private IMavenAccountsAdd _mavensAccountAdd;
+        private IMavenRingGamesPlaying _mavenRingGamesPlaying;
         //private ISecrets _secrets;
 
-        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo)
+        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo, IMavenAccountsEdit mavensAccountsEdit, IMavenAccountsAdd mavenAccountsAdd, IMavenRingGamesPlaying mavenRingGamesPlaying)
         {
             _slackClient = SlackClient;
             _pokerContext = pokerContext;
             _pokerRepo = PokerRepo;
+            _mavensAccountEdit = mavensAccountsEdit;
+            _mavensAccountAdd = mavenAccountsAdd;
+            _mavenRingGamesPlaying = mavenRingGamesPlaying;
         }
         [HttpPost]
         public IActionResult Index(IFormCollection Form)
@@ -257,7 +263,7 @@ namespace PokerBot.Controllers
             string userID = Form["user_id"];
             string userName = Form["user_name"];
             string text = Form["Text"];
-            bool success = _pokerRepo.ChangePassword(userID, text);
+            bool success = _mavensAccountEdit.ChangePassword(userID, text);
             string message;
             if(success)
             {
@@ -373,7 +379,7 @@ namespace PokerBot.Controllers
                 _slackClient.PostAPIMessage(errmsg, null, userID);
                 return new EmptyResult();
             }
-            var response =  _pokerRepo.CreateNewUser(newPlayerSlackID, pokerName, realName, Location, Email);
+            var response =  _mavensAccountAdd.CreateNewUser(newPlayerSlackID, pokerName, realName, Location, Email);
             string message = $"New poker account created for <@{newPlayerSlackName}>:  UserName: " + pokerName + ". Password: password";
             _slackClient.PostAPIMessage(message, null, userID);
             message = $"Your poker account has been created: UserName: {pokerName} Password: password";

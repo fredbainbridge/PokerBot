@@ -8,7 +8,7 @@ using PokerBot.Repository;
 using PokerBot.Models;
 using Microsoft.EntityFrameworkCore;
 using PokerBot.Services;
-using PokerMavensAPI;
+using PokerBot.Repository.Mavens;
 
 namespace PokerBot
 {
@@ -29,7 +29,14 @@ namespace PokerBot
             services.AddScoped<IPokerRepository, PokerRepository>();
             services.AddScoped<ISlackClient, SlackClient>();
             services.AddSingleton<IGameState, GameState>();
-            services.AddScoped(typeof(IMavenClient<>), typeof(MavenClient<>));
+            services.AddHttpClient<IMavenAccountsEdit, MavenAccountsEdit>();
+            services.AddHttpClient<IMavenAccountsAdd, MavenAccountsAdd>();
+            services.AddHttpClient<IMavenRingGamesPlaying, MavenRingGamesPlaying>();
+            services.AddHttpClient<IMavenRingGamesList, MavenRingGamesList>();
+            services.AddHttpClient<IMavenTournamentsPlaying, MavenTournamentsPlaying>();
+            services.AddHttpClient<IMavenTournamentsWaiting, MavenTournamentsWaiting>();
+            services.AddHttpClient<IMavenTournamentsList, MavenTournamentsList>();
+
             //background services
             services.AddHostedService<ConsumeScopedBalance>();
             services.AddScoped<IScopedBalance, ScopedBalance>();
@@ -42,7 +49,7 @@ namespace PokerBot
             else
                 services.AddDbContext<PokerDBContext>(options =>
                         options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-        
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
