@@ -8,6 +8,8 @@ using PokerMavensAPI;
 namespace PokerBot.Repository.Mavens {
     public interface IMavenAccountsEdit {
         bool ChangePassword(string SlackID, string password);
+        void SetAvatarPath(string name, string path);
+        void SetPrimaryBalance(string Name, int Balance);
     }
     public class MavenAccountsEdit : IMavenAccountsEdit{
         private HttpClient _client;
@@ -33,6 +35,27 @@ namespace PokerBot.Repository.Mavens {
             MavenClient<AccountsEdit> mClient = new MavenClient<AccountsEdit>(_secrets);
             var response = mClient.Post(_client, dict);
             return true;
+        }
+
+        public void SetAvatarPath(string name, string path)
+        {
+            var client = new MavenClient<AccountsEdit>(_secrets);
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Command", "AccountsEdit");
+            dict.Add("Player", name);
+            dict.Add("AvatarFile", path);
+            dict.Add("Avatar", "0");
+            client.Post(_client, dict);
+        }
+
+        public void SetPrimaryBalance(string Name, int Balance)
+        {
+            var client = new MavenClient<AccountsEdit>(_secrets);
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Command", "AccountsEdit");
+            dict.Add("Player", Name);
+            dict.Add("Balance", Balance.ToString());
+            client.Post(_client, dict);
         }
     }
 }

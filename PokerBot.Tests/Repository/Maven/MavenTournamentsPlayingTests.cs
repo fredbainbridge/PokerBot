@@ -26,8 +26,8 @@ namespace PokerBot.Tests.Repository.Maven
             tpIn.Chips = new List<double>() { 1 };
             tpIn.Player = new List<string>() { "test" };
             httpClient = MavenTestSetup.GetHttpClient(tpIn);
-            MavenRingGamesPlaying mrp = new MavenRingGamesPlaying(httpClient, secrets, new Mock<IMavenRingGamesList>().Object);
-            List<Player> returnedPlayers = mrp.GetSeatedPlayers("test");
+            MavenTournamentsPlaying mtp = new MavenTournamentsPlaying(httpClient, secrets, new Mock<IMavenTournamentsList>().Object);
+            List<Player> returnedPlayers = mtp.GetSeatedPlayers("test");
             Assert.True(returnedPlayers.Count == tpIn.Count);
         }
     }

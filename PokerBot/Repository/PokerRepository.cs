@@ -10,15 +10,38 @@ public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
     private PokerDBContext _pokerContext;
     private IMavenRingGamesPlaying _mavenRingGamesPlaying;
+    private IMavenRingGamesList _mavenRingGamesList;
+    private IMavenRingGamesGet _mavenRingGamesGet;
+    private IMavenRingGamesMessage _mavenRingGamesMessage;
     private IMavenTournamentsPlaying _mavenTournamentsPlaying;
     private IMavenTournamentsWaiting _mavenTournamentsWaiting;
+    private IMavenAccountsEdit _mavenAccountsEdit;
+    private IMavenAccountsList _mavenAccountsList;
+    private IMavenLogsHandHistory _mavenLogsHandHistory;
 
-    public PokerRepository(ISecrets Secrets, PokerDBContext PokerContext, IMavenRingGamesPlaying mavenRingGamesPlaying, IMavenTournamentsPlaying mavenTournamentsPlaying, IMavenTournamentsWaiting mavenTournamentsWaiting) {
+    public PokerRepository(
+        ISecrets Secrets, 
+        PokerDBContext PokerContext, 
+        IMavenRingGamesPlaying mavenRingGamesPlaying,
+        IMavenRingGamesList mavenRingGamesList,
+        IMavenRingGamesGet mavenRingGamesGet,
+        IMavenRingGamesMessage mavenRingGamesMessage,
+        IMavenTournamentsPlaying mavenTournamentsPlaying, 
+        IMavenTournamentsWaiting mavenTournamentsWaiting, 
+        IMavenAccountsEdit mavenAccountsEdit,
+        IMavenAccountsList mavenAccountsList,
+        IMavenLogsHandHistory mavenLogsHandHistory) {
         _secrets = Secrets;
         _pokerContext = PokerContext;
         _mavenRingGamesPlaying = mavenRingGamesPlaying;
+        _mavenRingGamesList = mavenRingGamesList;
+        _mavenRingGamesGet = mavenRingGamesGet;
+        _mavenRingGamesMessage = mavenRingGamesMessage;
         _mavenTournamentsPlaying = mavenTournamentsPlaying;
         _mavenTournamentsWaiting = mavenTournamentsWaiting;
+        _mavenAccountsEdit = mavenAccountsEdit;
+        _mavenAccountsList = mavenAccountsList;
+        _mavenLogsHandHistory = mavenLogsHandHistory;
     }
     public bool AnySeatedOrWaitingPlayers()
     {
@@ -45,35 +68,7 @@ public class PokerRepository : IPokerRepository {
     {
         return _pokerContext.vSession.Take(Top.HasValue ? Top.Value : int.MaxValue).ToList();
     }
-    public void SetAvatarPath(string name, string path)
-    {
-        var client = new MaevenClient<AccountsEdit>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "AccountsEdit");
-        dict.Add("Player", name);
-        dict.Add("AvatarFile", path);
-        dict.Add("Avatar", "0");
-        client.Post(dict);
-
-    }
-    public void SetPrimaryBalance(string Name, int Balance)
-    {
-        var client = new MaevenClient<AccountsEdit>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "AccountsEdit");
-        dict.Add("Player", Name);
-        dict.Add("Balance", Balance.ToString());
-        client.Post(dict);
-
-    }
-    public AccountsList GetAccounts()
-    {
-        var client = new MaevenClient<AccountsList>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "AccountsList");
-        dict.Add("Fields", "RealName,Balance,Player");
-        return client.Post(dict);
-    }
+    
     public List<Player> GetSeatedPlayers(string TableName, string Type = "RingGame") {
         List<Player> players = new List<Player>();
         if(Type.Equals("RingGame"))
@@ -98,11 +93,7 @@ public class PokerRepository : IPokerRepository {
         return false;
     }
     public Hand GetHandHistory(string HandID) {
-        var client = new MaevenClient<LogsHandHistory>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "LogsHandHistory");
-        dict.Add("Hand", HandID);
-        var request = client.Post(dict);
+        LogsHandHistory request = _mavenLogsHandHistory.GetHistory(HandID);
         //"Hand #10001-1 - 2019-12-09 21:05:05",
 
         Hand hand = new Hand();
@@ -189,12 +180,9 @@ public class PokerRepository : IPokerRepository {
     }
     public List<RingGamesGet> GetTable(string TableName = null) {
         RingGamesList list = new RingGamesList();
-        if(string.IsNullOrEmpty(TableName)) {  //get all ring games
-            var clientGet = new MaevenClient<RingGamesList>(_secrets.PokerURL(), _secrets.Password());
-            Dictionary<string, string> dictGet = new Dictionary<string, string>();
-            dictGet.Add("Command", "RingGamesList"); 
-            dictGet.Add("Fields", "Name");
-            list = clientGet.Post(dictGet);
+        if (string.IsNullOrEmpty(TableName))
+        {
+            list = _mavenRingGamesList.RingGames();
         }
         else
         {
@@ -202,17 +190,12 @@ public class PokerRepository : IPokerRepository {
             list.Name.Add(TableName);
         }
 
-        var client = new MaevenClient<RingGamesGet>(_secrets.PokerURL(), _secrets.Password());
         List<RingGamesGet> ringGames = new List<RingGamesGet>();
-        foreach(var l in list.Name)
+        foreach(var tableName in list.Name)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("Command", "RingGamesGet");
-            dict.Add("Name", l);
-            ringGames.Add(client.Post(dict));
+            ringGames.Add(_mavenRingGamesGet.GetRingGame(tableName));
         }
         return ringGames;
-        
     }
     public void SendMessageToAllRingGames(string message)
     {
@@ -232,27 +215,19 @@ public class PokerRepository : IPokerRepository {
     }
     public string RemainingSeatsMessage(string TableName) {
         int remaining = OpenSeats(TableName);
-        string remainingSeatsMsg = "";
+        string remainingSeatsMsg = "There are " + remaining.ToString() + " seats remaining. ";
         if(remaining == 0) {
             remainingSeatsMsg = "The table is full! ";
         }
         else if(remaining == 1) {
             remainingSeatsMsg = "There is one seat remaining! ";
         }
-        else {
-            remainingSeatsMsg = "There are " + remaining.ToString() + " seats remaining. ";
-        }
         return remainingSeatsMsg;
     }
 
     public void SendAdminMessage(string Message, string TableName)
     {
-        var client = new MaevenClient<RingGamesMessage>(_secrets.PokerURL(), _secrets.Password());
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        dict.Add("Command", "RingGamesMessage");
-        dict.Add("Name", TableName);
-        dict.Add("Message", Message);
-        client.Post(dict);
+        _mavenRingGamesMessage.SendAdminMessage(Message, TableName);
 
     }
     public List<vHand> GetHands(string handID = null, int minSize = 0, string winner = null, string tableName = null) 
@@ -298,7 +273,7 @@ public class PokerRepository : IPokerRepository {
         }
         
         DateTime now = DateTime.Now;
-        AccountsList accountList = GetAccounts();
+        AccountsList accountList = _mavenAccountsList.GetAccounts();
         for (int i = 0; i < accountList.Accounts; i++)
         {
             if (accountList.Balance[i] != "100000")
@@ -324,7 +299,7 @@ public class PokerRepository : IPokerRepository {
 
                 _pokerContext.Sessions.Add(s);
                 _pokerContext.SaveChanges();
-                SetPrimaryBalance(accountList.Player[i], 100000);
+                _mavenAccountsEdit.SetPrimaryBalance(accountList.Player[i], 100000);
 
             }
         }

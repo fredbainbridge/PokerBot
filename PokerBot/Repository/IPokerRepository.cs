@@ -8,11 +8,8 @@ namespace PokerBot.Repository {
         void SendMessageToAllRingGames(string message);
         int OpenSeats(string TableName);
         string RemainingSeatsMessage(string TableName);
-        void SetAvatarPath(string name, string path);
         Hand GetHandHistory(string HandID);
         void SendAdminMessage(string Message, string TableName);
-        AccountsList GetAccounts();
-        void SetPrimaryBalance(string Name, int Balance);
         List<vSession> GetSessions(int? Top = null);
         List<UserBalance> GetUserBalances();
         bool AnySeatedOrWaitingPlayers();
