@@ -8,6 +8,7 @@ using System.Net.Http;
 using PokerBot.Models;
 using ImageMagick;
 using System.IO;
+using PokerBot.Repository.Mavens;
 
 namespace PokerBot.Services
 {
@@ -22,13 +23,15 @@ namespace PokerBot.Services
         private IPokerRepository _pokerRepo;
         private PokerDBContext _pokerDB;
         private ISlackClient _slackClient;
+        private IMavenAccountsEdit _mavenAccountsEdit;
         
-        public SlackUserAvatar(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient)
+        public SlackUserAvatar(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient, IMavenAccountsEdit mavenAccountsEdit)
         {
             _secrets = secrets;
             _pokerRepo = pokerRepository;
             _pokerDB = pokerDBContext;
             _slackClient = slackClient;
+            _mavenAccountsEdit = mavenAccountsEdit;
         }
         public async Task GetGraphics(CancellationToken cancellationToken)
         {
@@ -78,7 +81,7 @@ namespace PokerBot.Services
                         Console.WriteLine("\nException Caught!");
                         Console.WriteLine("Message :{0} ", e.Message);
                     }
-                    _pokerRepo.SetAvatarPath(user.UserName, _secrets.AvatarDir() + user.SlackID + ".png");
+                    _mavenAccountsEdit.SetAvatarPath(user.UserName, _secrets.AvatarDir() + user.SlackID + ".png");
                     await Task.Delay(2000, cancellationToken);
                 }
                     
