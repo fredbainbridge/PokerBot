@@ -6,13 +6,8 @@
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\Poker-MavensAPI\PokerMavensAPI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="secrets.json" />
   </ItemGroup>
 
   <ItemGroup>

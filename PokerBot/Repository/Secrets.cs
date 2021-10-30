@@ -24,32 +24,20 @@ namespace PokerBot.Repository {
         private Secret _secret;
         public Secrets() {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if(environment.Equals("Azure")) {
-                Secret secret = new Secret();
-                secret.AvatarDir = Environment.GetEnvironmentVariable("AVATAR_DIR");
-                secret.Balance = Int32.Parse(Environment.GetEnvironmentVariable("BALANCE"));
-                secret.HOFExclusions =  Environment.GetEnvironmentVariable("HOF_EXCLUSIONS").Split(',').ToList();
-                secret.GameNames =  Environment.GetEnvironmentVariable("GAME_NAMES").Split(',').ToList();
-                secret.GameURL = Environment.GetEnvironmentVariable("GAME_URL");
-                secret.Password = Environment.GetEnvironmentVariable("PASSWORD");
-                secret.ServerURL = Environment.GetEnvironmentVariable("SERVER_URL");
-                secret.Silence = bool.Parse(Environment.GetEnvironmentVariable("SILENCE"));
-                secret.SlackURLs =  Environment.GetEnvironmentVariable("SLACK_URLS").Split(',').ToList();
-                secret.Token = Environment.GetEnvironmentVariable("TOKEN");
-                secret.UserToken = Environment.GetEnvironmentVariable("USER_TOKEN");
-                secret.WebsiteURL = Environment.GetEnvironmentVariable("WEBSITE_URL");
-                _secret = secret;
-            }
-            else {
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                var stream = assembly.GetManifestResourceStream("PokerBot.secrets.json");
-                var secretJSON = "";
-                using(var reader = new StreamReader(stream)) {
-                    secretJSON = reader.ReadToEnd();
-                }
-                _secret = JsonConvert.DeserializeObject<Secret>(secretJSON);
-            }
-            
+            Secret secret = new Secret();
+            secret.AvatarDir = Environment.GetEnvironmentVariable("AVATAR_DIR");
+            secret.Balance = Int32.Parse(Environment.GetEnvironmentVariable("BALANCE"));
+            secret.HOFExclusions =  Environment.GetEnvironmentVariable("HOF_EXCLUSIONS").Split(',').ToList();
+            secret.GameNames =  Environment.GetEnvironmentVariable("GAME_NAMES").Split(',').ToList();
+            secret.GameURL = Environment.GetEnvironmentVariable("GAME_URL");
+            secret.Password = Environment.GetEnvironmentVariable("PASSWORD");
+            secret.ServerURL = Environment.GetEnvironmentVariable("SERVER_URL");
+            secret.Silence = bool.Parse(Environment.GetEnvironmentVariable("SILENCE"));
+            secret.SlackURLs =  Environment.GetEnvironmentVariable("SLACK_URLS").Split(',').ToList();
+            secret.Token = Environment.GetEnvironmentVariable("TOKEN");
+            secret.UserToken = Environment.GetEnvironmentVariable("USER_TOKEN");
+            secret.WebsiteURL = Environment.GetEnvironmentVariable("WEBSITE_URL");
+            _secret = secret;
         }
         public string PokerURL(){
             return _secret.ServerURL;
