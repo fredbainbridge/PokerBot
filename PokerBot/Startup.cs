@@ -35,6 +35,8 @@ namespace PokerBot
             services.AddHttpClient<IMavenLogsHandHistory, MavenLogsHandHistory>();
             services.AddHttpClient<IMavenRingGamesList, MavenRingGamesList>();
             services.AddHttpClient<IMavenRingGamesGet, MavenRingGamesGet>();
+            services.AddHttpClient<IMavenRingGamesMessage, MavenRingGamesMessage>();
+            services.AddHttpClient<IMavenRingGamesPlaying, MavenRingGamesPlaying>();
             services.AddHttpClient<IMavenTournamentsPlaying, MavenTournamentsPlaying>();
             services.AddHttpClient<IMavenTournamentsWaiting, MavenTournamentsWaiting>();
             services.AddHttpClient<IMavenTournamentsList, MavenTournamentsList>();
