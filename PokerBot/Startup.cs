@@ -48,7 +48,7 @@ namespace PokerBot
             services.AddHostedService<ConsumeSlackUserAvatar>();
             services.AddScoped<ISlackUserAvatar, SlackUserAvatar>();
 
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Azure")
                 services.AddDbContext<PokerDBContext>(options =>
                         options.UseSqlServer(Configuration.GetConnectionString("azureConnection")));
             else
