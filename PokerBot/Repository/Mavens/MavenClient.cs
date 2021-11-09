@@ -1,9 +1,10 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using PokerBot.Repository;
+using System;
 
 namespace PokerBot.Repository.Mavens {
     public class MavenClient<T> : IMavenClient<T>
@@ -31,8 +32,35 @@ namespace PokerBot.Repository.Mavens {
         }
         public T Post(HttpClient client, Dictionary<string,string> Parameters) {
             string response = Request(client, Parameters).Result;
-            return JsonConvert.DeserializeObject<T>(response);
+            var serializationOptions = new JsonSerializerOptions();
+            serializationOptions.Converters.Add(new StringConverter());
+            return JsonSerializer.Deserialize<T>(response, serializationOptions);
         }
+    }
+
+    public class StringConverter : System.Text.Json.Serialization.JsonConverter<string>
+    {
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+ 
+            if (reader.TokenType == JsonTokenType.Number)
+            {
+                var stringValue = reader.GetInt32();
+                return stringValue.ToString();
+            }
+            else if (reader.TokenType == JsonTokenType.String)
+            {
+                return reader.GetString();
+            }
+ 
+            throw new System.Text.Json.JsonException();
+        }
+ 
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value);
+        }
+ 
     }
 
 }

@@ -1,8 +1,5 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace PokerBot.Repository.Mavens {
     public interface IMavenClient<T>

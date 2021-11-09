@@ -9,112 +9,113 @@ namespace PokerBot.Models
     using System.Collections.Generic;
 
     using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     public partial class SlackUser
     {
-        [JsonProperty("ok")]
+        [JsonPropertyName("ok")]
         public bool Ok { get; set; }
 
-        [JsonProperty("profile")]
+        [JsonPropertyName("profile")]
         public Profile Profile { get; set; }
     }
 
     public partial class Profile
     {
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [JsonProperty("phone")]
+        [JsonPropertyName("phone")]
         public string Phone { get; set; }
 
-        [JsonProperty("skype")]
+        [JsonPropertyName("skype")]
         public string Skype { get; set; }
 
-        [JsonProperty("real_name")]
+        [JsonPropertyName("real_name")]
         public string RealName { get; set; }
 
-        [JsonProperty("real_name_normalized")]
+        [JsonPropertyName("real_name_normalized")]
         public string RealNameNormalized { get; set; }
 
-        [JsonProperty("display_name")]
+        [JsonPropertyName("display_name")]
         public string DisplayName { get; set; }
 
-        [JsonProperty("display_name_normalized")]
+        [JsonPropertyName("display_name_normalized")]
         public string DisplayNameNormalized { get; set; }
 
-        [JsonProperty("fields")]
+        [JsonPropertyName("fields")]
         public object Fields { get; set; }
 
-        [JsonProperty("status_text")]
+        [JsonPropertyName("status_text")]
         public string StatusText { get; set; }
 
-        [JsonProperty("status_emoji")]
+        [JsonPropertyName("status_emoji")]
         public string StatusEmoji { get; set; }
 
-        [JsonProperty("status_expiration")]
+        [JsonPropertyName("status_expiration")]
         public long StatusExpiration { get; set; }
 
-        [JsonProperty("avatar_hash")]
+        [JsonPropertyName("avatar_hash")]
         public string AvatarHash { get; set; }
 
-        [JsonProperty("image_original")]
+        [JsonPropertyName("image_original")]
         public string ImageOriginal { get; set; }
 
-        [JsonProperty("is_custom_image")]
+        [JsonPropertyName("is_custom_image")]
         public bool IsCustomImage { get; set; }
 
-        [JsonProperty("first_name")]
+        [JsonPropertyName("first_name")]
         public string FirstName { get; set; }
 
-        [JsonProperty("last_name")]
+        [JsonPropertyName("last_name")]
         public string LastName { get; set; }
 
-        [JsonProperty("image_24")]
+        [JsonPropertyName("image_24")]
         public string Image24 { get; set; }
 
-        [JsonProperty("image_32")]
+        [JsonPropertyName("image_32")]
         public string Image32 { get; set; }
 
-        [JsonProperty("image_48")]
+        [JsonPropertyName("image_48")]
         public string Image48 { get; set; }
 
-        [JsonProperty("image_72")]
+        [JsonPropertyName("image_72")]
         public string Image72 { get; set; }
 
-        [JsonProperty("image_192")]
+        [JsonPropertyName("image_192")]
         public string Image192 { get; set; }
 
-        [JsonProperty("image_512")]
+        [JsonPropertyName("image_512")]
         public string Image512 { get; set; }
 
-        [JsonProperty("image_1024")]
+        [JsonPropertyName("image_1024")]
         public string Image1024 { get; set; }
 
-        [JsonProperty("status_text_canonical")]
+        [JsonPropertyName("status_text_canonical")]
         public string StatusTextCanonical { get; set; }
     }
 
     public partial class SlackUser
     {
-        public static SlackUser FromJson(string json) => JsonConvert.DeserializeObject<SlackUser>(json, Converter.Settings);
+        public static SlackUser FromJson(string json) => JsonSerializer.Deserialize<SlackUser>(json);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this SlackUser self) => JsonConvert.SerializeObject(self, Converter.Settings);
+        public static string ToJson(this SlackUser self) => JsonSerializer.Serialize(self);
     }
 
     internal static class Converter
     {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        public static readonly JsonSerializerOptions Settings = new JsonSerializerOptions
         {
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling = DateParseHandling.None,
-            Converters = {
-                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            
+            //MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            //DateParseHandling = DateParseHandling.None,
+            //Converters = {
+            //    new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            //},
         };
     }
 }

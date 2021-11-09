@@ -1,7 +1,7 @@
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid:830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/PokerBot/bin/Debug/netcoreapp3.1/PokerBot.exe",
+            "program": "${workspaceFolder}/PokerBot/bin/Debug/net5.0/PokerBot.exe",
             "args": [],
             "cwd": "${workspaceFolder}/PokerBot",
             "stopAtEntry": false,
@@ -18,7 +18,19 @@
                 "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "AVATAR_DIR" : "NA",
+                "BALANCE" : "100000",
+                "GAME_NAMES" : "Cash Game",
+                "GAME_URL" : "http://happies.servegame.com:8087",
+                "HOF_EXCLUSIONS" : "Cash Game 100/200 No Limit ($10000 min)",
+                "PASSWORD" : "Rival234Rival234!",
+                "SERVER_URL" : "http://happies.servegame.com:8087/api",
+                "SILENCE" : "false",
+                "SLACK_URLS" : "https://hooks.slack.com/services/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,https://hooks.slack.com/services/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",
+                "TOKEN" : "xoxb-2496665135957-2513890551025-xRV5Bsdq3lNKPanmxg8TxFIm",
+                "USER_TOKEN": "xoxp-2496665135957-2492929713190-2494570759702-91fa3940c2bfdf359b334645bffab040",
+                "WEBSITE_URL" : "http://happies.servegame.com:5000"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"

@@ -1,9 +1,10 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 //A simple C# class to post messages to a Slack channel
 //Note: This class uses the Newtonsoft Json.NET serializer available via NuGet
@@ -56,7 +57,7 @@ namespace PokerBot.Repository {
         //Post a message using a Payload object
         public void PostWebhookMessage(Payload payload)
         {
-            string payloadJson = JsonConvert.SerializeObject(payload);
+            string payloadJson = JsonSerializer.Serialize(payload);
             foreach(var _uri in _secrets.SlackURLs()) {
                 using (WebClient client = new WebClient())
                 {
@@ -73,7 +74,7 @@ namespace PokerBot.Repository {
         public void PostAPIMessage(Payload payload)
 		{
             var _uri = new Uri("https://slack.com/api/chat.postMessage");
-            string payloadJson = JsonConvert.SerializeObject(payload);
+            string payloadJson = JsonSerializer.Serialize(payload);
 			
 			using (WebClient client = new WebClient())
 			{
@@ -95,13 +96,13 @@ namespace PokerBot.Repository {
         //[JsonProperty("token")]
         //public string Token { get; set; }
 
-		[JsonProperty("channel")]
+		[JsonPropertyName("channel")]
 		public string Channel { get; set; }
 		
-		[JsonProperty("text")]
+		[JsonPropertyName("text")]
 		public string Text { get; set; }
 
-        [JsonProperty("as_user")]
+        [JsonPropertyName("as_user")]
         public bool As_User { get; set; }
  
 	}

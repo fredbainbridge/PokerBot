@@ -94,6 +94,10 @@ public class PokerRepository : IPokerRepository {
     }
     public Hand GetHandHistory(string HandID) {
         LogsHandHistory request = _mavenLogsHandHistory.GetHistory(HandID);
+        if(request.Result.Equals("Error")) {
+            Console.WriteLine(request.Error);
+            return  null;
+        }
         //"Hand #10001-1 - 2019-12-09 21:05:05",
 
         Hand hand = new Hand();
