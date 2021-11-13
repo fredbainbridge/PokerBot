@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using PokerBot.Repository.Mavens;
+using Microsoft.Extensions.Logging;
 
 public class PokerRepository : IPokerRepository {
     private ISecrets _secrets;
@@ -18,6 +19,7 @@ public class PokerRepository : IPokerRepository {
     private IMavenAccountsEdit _mavenAccountsEdit;
     private IMavenAccountsList _mavenAccountsList;
     private IMavenLogsHandHistory _mavenLogsHandHistory;
+    private readonly ILogger<PokerRepository> _logger;
 
     public PokerRepository(
         ISecrets Secrets, 
@@ -30,7 +32,8 @@ public class PokerRepository : IPokerRepository {
         IMavenTournamentsWaiting mavenTournamentsWaiting, 
         IMavenAccountsEdit mavenAccountsEdit,
         IMavenAccountsList mavenAccountsList,
-        IMavenLogsHandHistory mavenLogsHandHistory) {
+        IMavenLogsHandHistory mavenLogsHandHistory,
+        ILogger<PokerRepository> logger) {
         _secrets = Secrets;
         _pokerContext = PokerContext;
         _mavenRingGamesPlaying = mavenRingGamesPlaying;
@@ -42,6 +45,7 @@ public class PokerRepository : IPokerRepository {
         _mavenAccountsEdit = mavenAccountsEdit;
         _mavenAccountsList = mavenAccountsList;
         _mavenLogsHandHistory = mavenLogsHandHistory;
+        _logger = logger;
     }
     public bool AnySeatedOrWaitingPlayers()
     {
@@ -95,7 +99,7 @@ public class PokerRepository : IPokerRepository {
     public Hand GetHandHistory(string HandID) {
         LogsHandHistory request = _mavenLogsHandHistory.GetHistory(HandID);
         if(request.Result.Equals("Error")) {
-            Console.WriteLine(request.Error);
+            _logger.LogError(request.Error);
             return  null;
         }
         //"Hand #10001-1 - 2019-12-09 21:05:05",
@@ -206,7 +210,7 @@ public class PokerRepository : IPokerRepository {
         var tables = GetTable();
         foreach (var t in tables)
         {
-            Console.WriteLine(message);
+            _logger.LogInformation("RingGame Admin Message: " + message);
             SendAdminMessage(message, t.Name);
         }
     }
@@ -265,14 +269,14 @@ public class PokerRepository : IPokerRepository {
         }
         catch
         {
-            Console.WriteLine("Waiting for server to start");
+            _logger.LogInformation("Waiting for server to start");
             return null;
         }
         bool gameOn = false;
         gameOn = AnySeatedOrWaitingPlayers(); 
         if (gameOn)
         {
-            Console.WriteLine("A game is happening, balance changes will not be recorded.");
+            _logger.LogInformation("A game is happening, balance changes will not be recorded.");
             return null;
         }
         
@@ -283,13 +287,13 @@ public class PokerRepository : IPokerRepository {
             if (accountList.Balance[i] != "100000")
             {
                 User u = _pokerContext.User.Where(u => u.UserName.Equals(accountList.Player[i])).FirstOrDefault();
-                Console.WriteLine("Recording session for " + u.RealName);
+                _logger.LogInformation("Recording session for " + u.RealName);
                 bool success = false;
                 int balance;
                 success = Int32.TryParse(accountList.Balance[i], out balance);
                 if(!success)
                 {
-                    Console.WriteLine("Non integer balance found, is the smallest chip size set correctly on the table?");
+                    _logger.LogWarning("Non integer balance found, is the smallest chip size set correctly on the table?");
                     continue;
                 }
                 int chips = balance - 100000;
