@@ -29,7 +29,7 @@ namespace PokerBot.Repository.Mavens
             List<Player> players = new List<Player>();
             var client = new MavenClient<TournamentsPlaying>(_secrets);
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("Command", "TournamentGamesPlaying");
+            dict.Add("Command", "TournamentsPlaying");
             dict.Add("Name", TableName);
             TournamentsPlaying request = client.Post(_client, dict);
             for (int i = 0; i < request.Count; i++)
