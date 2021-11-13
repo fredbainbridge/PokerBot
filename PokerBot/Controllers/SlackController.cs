@@ -5,6 +5,7 @@ using PokerBot.Models;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using PokerBot.Repository.Mavens;
+using Microsoft.Extensions.Logging;
 
 namespace PokerBot.Controllers
 {
@@ -16,9 +17,10 @@ namespace PokerBot.Controllers
         private IMavenAccountsEdit _mavensAccountEdit;
         private IMavenAccountsAdd _mavensAccountAdd;
         private IMavenRingGamesPlaying _mavenRingGamesPlaying;
+        private readonly ILogger<SlackController> _logger;
         //private ISecrets _secrets;
 
-        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo, IMavenAccountsEdit mavensAccountsEdit, IMavenAccountsAdd mavenAccountsAdd, IMavenRingGamesPlaying mavenRingGamesPlaying)
+        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo, IMavenAccountsEdit mavensAccountsEdit, IMavenAccountsAdd mavenAccountsAdd, IMavenRingGamesPlaying mavenRingGamesPlaying, ILogger<SlackController> logger)
         {
             _slackClient = SlackClient;
             _pokerContext = pokerContext;
@@ -26,6 +28,7 @@ namespace PokerBot.Controllers
             _mavensAccountEdit = mavensAccountsEdit;
             _mavensAccountAdd = mavenAccountsAdd;
             _mavenRingGamesPlaying = mavenRingGamesPlaying;
+            _logger = logger;
         }
         [HttpPost]
         public IActionResult Index(IFormCollection Form)
@@ -50,7 +53,7 @@ namespace PokerBot.Controllers
             User u = _pokerContext.User.Where(u => u.SlackID.Equals(userID)).FirstOrDefault();
             UserBalance balance = _pokerContext.UserBalance.Where(b => b.UserID == u.ID).FirstOrDefault();
             var sessions = _pokerRepo.UpdateBalances();
-            Console.WriteLine(u.RealName + " has requested their balance."); 
+            _logger.LogInformation(u.RealName + " has requested their balance."); 
             if (sessions == null)
             {
                 string gameOnText = "There is a game going on so your balance may not be accurate.";
@@ -281,7 +284,7 @@ namespace PokerBot.Controllers
             string text = Form["Text"];
             string[] parameters = text.Split(' ');
             if(parameters.Count() != 2) {
-                return BadRequest("Wrong number of paramters.");
+                return BadRequest("Wrong number of parameters.");
             }
             string slackID = parameters[0].Trim('<').Trim('>').Trim('@').Split('|')[0];
             string slackUserName = parameters[0].Trim('<').Trim('>').Trim('@').Split('|')[1];

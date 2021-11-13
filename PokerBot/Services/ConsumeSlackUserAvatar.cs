@@ -20,15 +20,11 @@ namespace PokerBot.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //Console.WriteLine("Consume Scoped Service Hosted Service running.");
-
             await DoWork(stoppingToken);
         }
 
         private async Task DoWork(CancellationToken stoppingToken)
         {
-            //Console.WriteLine("Consume Scoped Service Hosted Service is working.");
-
             using (var scope = Services.CreateScope())
             {
                 var scopedProcessingService =
@@ -41,8 +37,6 @@ namespace PokerBot.Services
 
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Consume Slack User Avatar Hosted Service is stopping.");
-
             await Task.CompletedTask;
         }
     }

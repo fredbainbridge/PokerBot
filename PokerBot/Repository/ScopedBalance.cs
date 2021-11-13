@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using PokerMavensAPI;
 using PokerBot.Models;
-
+using Microsoft.Extensions.Logging;
 
 namespace PokerBot.Repository
 {
@@ -15,6 +15,7 @@ namespace PokerBot.Repository
     }
     internal class ScopedBalance : IScopedBalance
     {
+        private readonly ILogger<ScopedBalance> _logger;
         private ISecrets _secrets;
         private IPokerRepository _pokerRepo;
         private PokerDBContext _pokerDB;
@@ -34,7 +35,7 @@ namespace PokerBot.Repository
                 sessions = _pokerRepo.UpdateBalances();
                 if(sessions == null)
                 {
-                    Console.WriteLine("A game is happening, balance changes will not be recorded.");
+                    _logger.LogInformation("A game is happening, balance changes will not be recorded.");
                 }
                 else
                 {

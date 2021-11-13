@@ -9,6 +9,7 @@ using PokerBot.Models;
 using ImageMagick;
 using System.IO;
 using PokerBot.Repository.Mavens;
+using Microsoft.Extensions.Logging;
 
 namespace PokerBot.Services
 {
@@ -24,14 +25,16 @@ namespace PokerBot.Services
         private PokerDBContext _pokerDB;
         private ISlackClient _slackClient;
         private IMavenAccountsEdit _mavenAccountsEdit;
+        private readonly ILogger<SlackUserAvatar> _logger;
         
-        public SlackUserAvatar(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient, IMavenAccountsEdit mavenAccountsEdit)
+        public SlackUserAvatar(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient, IMavenAccountsEdit mavenAccountsEdit, ILogger<SlackUserAvatar> logger)
         {
             _secrets = secrets;
             _pokerRepo = pokerRepository;
             _pokerDB = pokerDBContext;
             _slackClient = slackClient;
             _mavenAccountsEdit = mavenAccountsEdit;
+            _logger = logger;
         }
         public async Task GetGraphics(CancellationToken cancellationToken)
         {
@@ -66,7 +69,7 @@ namespace PokerBot.Services
                             {
                                 File.Delete(_secrets.AvatarDir() + user.SlackID + ".png");
                             }
-                            Console.WriteLine(_secrets.AvatarDir() + user.SlackID + ".png");
+                            _logger.LogInformation(_secrets.AvatarDir() + user.SlackID + ".png");
                             i.Write(_secrets.AvatarDir() + user.SlackID + ".png");
                             user.AvatarHash = u.Profile.AvatarHash;
                         }
@@ -78,8 +81,8 @@ namespace PokerBot.Services
                     }
                     catch (HttpRequestException e)
                     {
-                        Console.WriteLine("\nException Caught!");
-                        Console.WriteLine("Message :{0} ", e.Message);
+                        _logger.LogError("\nException Caught!");
+                        _logger.LogError("Message :{0} ", e.Message);
                     }
                     _mavenAccountsEdit.SetAvatarPath(user.UserName, _secrets.AvatarDir() + user.SlackID + ".png");
                     await Task.Delay(20000, cancellationToken);

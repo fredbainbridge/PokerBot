@@ -359,3 +359,4 @@ MigrationBackup/
 .vs/PokerBot/v16/.suo
 .vs/PokerBot/v16/Server/sqlite3/storage.ide
 .vscode/launch.json
+.vs/

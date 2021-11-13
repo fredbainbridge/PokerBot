@@ -202,7 +202,7 @@ namespace PokerBot.Controllers
                             {
                                 adminmessage = player + " added " + String.Format("{0:n0}", (changeInt * -1)) + " chips.";
                             }
-                            Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + adminmessage); 
+                            _logger.LogInformation("(" + System.DateTime.Now.ToString() + ") " + adminmessage);
                             _pokerRepository.SendAdminMessage(adminmessage, source);
                         }
                     }
@@ -215,7 +215,7 @@ namespace PokerBot.Controllers
                 var tables = _pokerRepository.GetTable();
                 foreach(var t in tables)
                 {
-                    Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + player + " has logged in.");
+                    _logger.LogInformation("(" + System.DateTime.Now.ToString() + ") " + player + " has logged in.");
                     _pokerRepository.SendAdminMessage(player + " has logged in.", t.Name);
                 }
                 
@@ -243,7 +243,7 @@ namespace PokerBot.Controllers
                 _pokerRepository.SendMessageToAllRingGames(message);
             }
             if (!string.IsNullOrEmpty(message)) {
-                Console.WriteLine("(" + System.DateTime.Now.ToString() + ") " + message);
+                _logger.LogInformation("(" + System.DateTime.Now.ToString() + ") " + message);
                 if(!_secrets.Silence()){
                     _slackClient.PostWebhookMessage(
                         text: message
