@@ -9,6 +9,7 @@ using PokerBot.Models;
 using Microsoft.EntityFrameworkCore;
 using PokerBot.Services;
 using PokerBot.Repository.Mavens;
+using PokerBot.Repository.EventHub;
 
 namespace PokerBot
 {
@@ -29,6 +30,7 @@ namespace PokerBot
             services.AddScoped<ISecrets, Secrets>();
             services.AddScoped<IPokerRepository, PokerRepository>();
             services.AddScoped<ISlackClient, SlackClient>();
+            services.AddScoped<IPokerEventHub, PokerEventHub>();
             services.AddSingleton<IGameState, GameState>();
             services.AddHttpClient<IMavenAccountsEdit, MavenAccountsEdit>();
             services.AddHttpClient<IMavenAccountsAdd, MavenAccountsAdd>();

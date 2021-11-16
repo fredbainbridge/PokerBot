@@ -16,6 +16,8 @@ namespace PokerBot.Repository {
         public int Balance { get; set; }
         public List<string> HOFExclusions { get; set; }
         public string AvatarDir { get; set; }
+        public string EventHubConnectionString {get; set;}
+        public string EventHubName {get; set;}
     }
     public class Secrets : ISecrets {
         private Secret _secret;
@@ -34,6 +36,8 @@ namespace PokerBot.Repository {
             secret.Token = Environment.GetEnvironmentVariable("TOKEN");
             secret.UserToken = Environment.GetEnvironmentVariable("USER_TOKEN");
             secret.WebsiteURL = Environment.GetEnvironmentVariable("WEBSITE_URL");
+            secret.EventHubConnectionString = Environment.GetEnvironmentVariable("EVENTHUB_CONNECTION_STRING");
+            secret.EventHubName = Environment.GetEnvironmentVariable("EVENTHUB_NAME");
             _secret = secret;
         }
         public string PokerURL(){
@@ -79,6 +83,14 @@ namespace PokerBot.Repository {
         public string AvatarDir()
         {
             return _secret.AvatarDir;
+        }
+
+        public string EventHubConnectionString() {
+            return _secret.EventHubConnectionString;
+        }
+
+        public string EventHubName() {
+            return _secret.EventHubName;
         }
     }
 }

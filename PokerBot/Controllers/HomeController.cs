@@ -8,7 +8,7 @@ using System.Web;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
-using PokerMavensAPI;
+using PokerBot.Repository.EventHub;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PokerBot.Controllers
@@ -20,14 +20,16 @@ namespace PokerBot.Controllers
         private ISecrets _secrets;
         private ISlackClient _slackClient;
         private IGameState _gameState;
+        private IPokerEventHub _pokerEventHub;
         
-        public HomeController(ILogger<HomeController> logger, IPokerRepository PokerRepository, ISecrets Secrets, ISlackClient SlackClient, IGameState GameState)
+        public HomeController(ILogger<HomeController> logger, IPokerRepository PokerRepository, ISecrets Secrets, ISlackClient SlackClient, IGameState GameState, IPokerEventHub pokerEventHub)
         {
             _logger = logger;
             _pokerRepository = PokerRepository;
             _secrets = Secrets;
             _slackClient = SlackClient;
             _gameState = GameState;
+            _pokerEventHub = pokerEventHub;
         }
 
         public IActionResult Index()

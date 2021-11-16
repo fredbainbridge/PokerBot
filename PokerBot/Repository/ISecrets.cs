@@ -13,5 +13,7 @@ namespace PokerBot.Repository {
         List<string> GameName();
         List<string> HOFExclusions();
         string AvatarDir();
+        string EventHubConnectionString();
+        string EventHubName();
     }
 }

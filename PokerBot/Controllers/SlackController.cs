@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.Linq;
 using PokerBot.Repository.Mavens;
 using Microsoft.Extensions.Logging;
+using PokerBot.Repository.EventHub;
 
 namespace PokerBot.Controllers
 {
@@ -18,9 +19,10 @@ namespace PokerBot.Controllers
         private IMavenAccountsAdd _mavensAccountAdd;
         private IMavenRingGamesPlaying _mavenRingGamesPlaying;
         private readonly ILogger<SlackController> _logger;
+        private IPokerEventHub _pokerEventHub;
         //private ISecrets _secrets;
 
-        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo, IMavenAccountsEdit mavensAccountsEdit, IMavenAccountsAdd mavenAccountsAdd, IMavenRingGamesPlaying mavenRingGamesPlaying, ILogger<SlackController> logger)
+        public SlackController(ISlackClient SlackClient, PokerDBContext pokerContext, IPokerRepository PokerRepo, IMavenAccountsEdit mavensAccountsEdit, IMavenAccountsAdd mavenAccountsAdd, IMavenRingGamesPlaying mavenRingGamesPlaying, ILogger<SlackController> logger, IPokerEventHub pokerEventHub)
         {
             _slackClient = SlackClient;
             _pokerContext = pokerContext;
@@ -29,6 +31,7 @@ namespace PokerBot.Controllers
             _mavensAccountAdd = mavenAccountsAdd;
             _mavenRingGamesPlaying = mavenRingGamesPlaying;
             _logger = logger;
+            _pokerEventHub = pokerEventHub;
         }
         [HttpPost]
         public IActionResult Index(IFormCollection Form)
@@ -54,6 +57,7 @@ namespace PokerBot.Controllers
             UserBalance balance = _pokerContext.UserBalance.Where(b => b.UserID == u.ID).FirstOrDefault();
             var sessions = _pokerRepo.UpdateBalances();
             _logger.LogInformation(u.RealName + " has requested their balance."); 
+            _pokerEventHub.SendEvent(u.RealName + " has requested their balance.");
             if (sessions == null)
             {
                 string gameOnText = "There is a game going on so your balance may not be accurate.";
