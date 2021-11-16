@@ -21,11 +21,12 @@ namespace PokerBot.Repository
         private PokerDBContext _pokerDB;
         private ISlackClient _slackClient;
 
-        public ScopedBalance(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient) {
+        public ScopedBalance(ISecrets secrets, IPokerRepository pokerRepository, PokerDBContext pokerDBContext, ISlackClient slackClient, ILogger<ScopedBalance> logger) {
             _secrets = secrets;
             _pokerRepo = pokerRepository;
             _pokerDB = pokerDBContext;
             _slackClient = slackClient;
+            _logger = logger;
         }
         public async Task DoWork(CancellationToken stoppingToken)
         {
