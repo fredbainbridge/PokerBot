@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using PokerBot.Repository;
 using PokerBot.Models;
 using Microsoft.EntityFrameworkCore;
-using PokerBot.Services;
 using PokerBot.Repository.Mavens;
 using PokerBot.Repository.EventHub;
 
@@ -47,9 +46,7 @@ namespace PokerBot
             //background services
             services.AddHostedService<ConsumeScopedBalance>();
             services.AddScoped<IScopedBalance, ScopedBalance>();
-            services.AddHostedService<ConsumeSlackUserAvatar>();
-            services.AddScoped<ISlackUserAvatar, SlackUserAvatar>();
-
+            
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Azure")
                 services.AddDbContext<PokerDBContext>(options =>
                         options.UseSqlServer(Configuration.GetConnectionString("azureConnection")));
