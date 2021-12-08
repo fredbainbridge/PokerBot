@@ -20,7 +20,7 @@ namespace PokerBot.Tests.Repository.Slack {
         {
             ISecrets secrets = new Secrets();
             HttpClient httpClient = new HttpClient();
-            SlackClient client = new SlackClient(secrets, httpClient);
+            SlackClient client = new SlackClient(secrets);
             client.PostAPIMessage("test", "U02EGTBLZ5L");
         }
     }
