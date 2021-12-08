@@ -78,7 +78,10 @@ namespace PokerBot.Tests.Repository.Maven
         {
             var secrets = new Mock<ISecrets>();
             secrets.Setup(s => s.PokerURL()).Returns("https://someurl.com");
-            return secrets.Object;
+            var x = System.Environment.GetEnvironmentVariable("USER_TOKEN");
+            return new Secrets();
+            //return secrets.Object;
         }
+
     }
 }

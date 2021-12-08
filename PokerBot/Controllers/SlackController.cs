@@ -129,7 +129,7 @@ namespace PokerBot.Controllers
                     }
                     catch
                     {
-                        _slackClient.PostAPIMessage("Unable to determine the payer.", null, userID);
+                        _slackClient.PostAPIMessage("Unable to determine the payer.", userID);
                         return new EmptyResult();
                     }
                     
@@ -143,7 +143,7 @@ namespace PokerBot.Controllers
                     }
                     catch
                     {
-                        _slackClient.PostAPIMessage("Unable to determine the payee.", null, userID);
+                        _slackClient.PostAPIMessage("Unable to determine the payee.", userID);
                         return new EmptyResult();
                     }
                     
@@ -192,14 +192,14 @@ namespace PokerBot.Controllers
 
             //slack to payer
             string payerMsg = $"Please pay <@{Payee.SlackID}> {chipsMoney}.  When the payment is sent do: ```/paid <@{Payee.SlackID}> [method of payment]```";
-            _slackClient.PostAPIMessage(payerMsg, null, payerID);
+            _slackClient.PostAPIMessage(payerMsg, payerID);
 
             payerMsg = "Previous balance: " + prevBalance + ".  Current Balance: " + curBalance;
-            _slackClient.PostAPIMessage(payerMsg, null, payerID);
+            _slackClient.PostAPIMessage(payerMsg, payerID);
 
             //slack to payee
             string payeeMsg = $"<@{Payer.SlackID}> has been requested to pay you {chipsMoney}.  You will be notified when the payment is sent.";
-            _slackClient.PostAPIMessage(payeeMsg, null, payeeID);
+            _slackClient.PostAPIMessage(payeeMsg, payeeID);
             return new EmptyResult();
         }
         public IActionResult PaymentSent(IFormCollection Form)
@@ -220,19 +220,19 @@ namespace PokerBot.Controllers
             if(existingPayment == null)
             {
                 string msg = $"There is no existing payment between you and <@{payee.SlackID}>.";
-                _slackClient.PostAPIMessage(msg, null, userID);
+                _slackClient.PostAPIMessage(msg, userID);
                 return new EmptyResult();
             }
             existingPayment.Sent = DateTime.Now;
             _pokerContext.SaveChanges();
 
             string payeeMsg = $"<@{payer.SlackID}> has sent you a payment via: " + notes;
-            _slackClient.PostAPIMessage(payeeMsg, null, to);
+            _slackClient.PostAPIMessage(payeeMsg, to);
             payeeMsg = $"Confirm payment has been received with /confirm <@{payer.SlackID}>";
-            _slackClient.PostAPIMessage(payeeMsg, null, to);
+            _slackClient.PostAPIMessage(payeeMsg, to);
 
             string payerMsg = toName + $"<@{payee.SlackID}> has been notified of your payment.  You will be notified when <@{payee.SlackID}> confirms the payment.";
-            _slackClient.PostAPIMessage(payerMsg, null, userID);
+            _slackClient.PostAPIMessage(payerMsg, userID);
             return new EmptyResult();
         }
         public IActionResult ConfirmPayment(IFormCollection Form)
@@ -244,7 +244,7 @@ namespace PokerBot.Controllers
             string fromName = text.Substring(0, text.LastIndexOf(">")).Trim('<').Trim('>').Trim('@').Split('|')[1];
             if(string.IsNullOrEmpty(fromID))
             {
-                _slackClient.PostAPIMessage("No user specified.  Who are you confirming payment from?  usage: /confirm @user  ", null, userID);
+                _slackClient.PostAPIMessage("No user specified.  Who are you confirming payment from?  usage: /confirm @user  ", userID);
                 return new EmptyResult();
             }
             User payer = _pokerContext.User.Where(u => u.SlackID == fromID).FirstOrDefault();
@@ -252,16 +252,16 @@ namespace PokerBot.Controllers
             Payment payment = _pokerContext.Payment.Where(p => p.Payee == payee && p.Payer == payer && p.Confirmed == null).FirstOrDefault();
             if(payment == null)
             {
-                _slackClient.PostAPIMessage($"No open payment found from <@{payer.SlackID}> to you.",null, userID);
+                _slackClient.PostAPIMessage($"No open payment found from <@{payer.SlackID}> to you.", userID);
                 return new EmptyResult();
             }
             payment.Confirmed = DateTime.Now;
             _pokerContext.SaveChanges();
             string fromMessage = userName + $"<@{payee.SlackID}> confirmed receipt of your payment.";
-            _slackClient.PostAPIMessage(fromMessage, null, fromID);
+            _slackClient.PostAPIMessage(fromMessage, fromID);
 
             string toMessage = "Payment receipt confirmed, thank you.";
-            _slackClient.PostAPIMessage(toMessage, null, userID);
+            _slackClient.PostAPIMessage(toMessage, userID);
             return new EmptyResult();
             
         }
@@ -280,7 +280,7 @@ namespace PokerBot.Controllers
             {
                 message = "Failed to update password, user not found maybe? ";
             }
-            _slackClient.PostAPIMessage(message, null, userID);
+            _slackClient.PostAPIMessage(message, userID);
             return new EmptyResult();
         }
         [HttpPost]
@@ -313,7 +313,7 @@ namespace PokerBot.Controllers
             if (!u.RealName.Equals("Fred"))
             {
                 string errmsg = $"You are not allowed to register new players.";
-                _slackClient.PostAPIMessage(errmsg, null, userID);
+                _slackClient.PostAPIMessage(errmsg, userID);
                 return new EmptyResult();
             }
             string text = Form["Text"];
@@ -333,7 +333,7 @@ namespace PokerBot.Controllers
                     }
                     catch
                     {
-                        _slackClient.PostAPIMessage($"Unable to determine the new player.  {parameters[i]}", null, userID);
+                        _slackClient.PostAPIMessage($"Unable to determine the new player.  {parameters[i]}", userID);
                         return new EmptyResult();
                     }
 
@@ -346,7 +346,7 @@ namespace PokerBot.Controllers
                     }
                     catch
                     {
-                        _slackClient.PostAPIMessage("Unable to determine the poker name. Your parameters are probably wrong.", null, userID);
+                        _slackClient.PostAPIMessage("Unable to determine the poker name. Your parameters are probably wrong.", userID);
                         return new EmptyResult();
                     }
 
@@ -362,14 +362,14 @@ namespace PokerBot.Controllers
             {
                 //account already exists.
                 string msg = "Account already exists.  UserName: " + existingUser.UserName;
-                _slackClient.PostAPIMessage(msg, null, userID);
+                _slackClient.PostAPIMessage(msg, userID);
                 return new EmptyResult();
             }
 
             if(pokerName.Length < 3 || pokerName.Length > 12)
             {
                 string errmsg = $"{pokerName} is too long or too short. Trying something with more than 3 character or less than 12.";
-                _slackClient.PostAPIMessage(errmsg, null, userID);
+                _slackClient.PostAPIMessage(errmsg, userID);
                 return new EmptyResult();
             }
             string Location = "The internet";
@@ -377,22 +377,22 @@ namespace PokerBot.Controllers
             if(string.IsNullOrEmpty(pokerName))
             {
                 string errmsg = $"PokerName parameter is null. Unsure how this happened.";
-                _slackClient.PostAPIMessage(errmsg, null, userID);
+                _slackClient.PostAPIMessage(errmsg, userID);
                 return new EmptyResult();
             }
             if(string.IsNullOrEmpty(realName))
             {
                 string errmsg = $"RealName parameter is null. Unsure how this happened.";
-                _slackClient.PostAPIMessage(errmsg, null, userID);
+                _slackClient.PostAPIMessage(errmsg, userID);
                 return new EmptyResult();
             }
             var response =  _mavensAccountAdd.CreateNewUser(newPlayerSlackID, pokerName, realName, Location, Email);
             string message = $"New poker account created for <@{newPlayerSlackName}>:  UserName: " + pokerName + ". Password: password";
-            _slackClient.PostAPIMessage(message, null, userID);
+            _slackClient.PostAPIMessage(message, userID);
             message = $"Your poker account has been created: UserName: {pokerName} Password: password";
-            _slackClient.PostAPIMessage(message, null, newPlayerSlackID);
+            _slackClient.PostAPIMessage(message, newPlayerSlackID);
             message = "Please change your password using /changepw.";
-            _slackClient.PostAPIMessage(message, null, newPlayerSlackID);
+            _slackClient.PostAPIMessage(message, newPlayerSlackID);
             return new EmptyResult();
         }
     }

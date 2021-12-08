@@ -27,13 +27,12 @@ namespace PokerBot.Repository {
 		}
         
 		
-        public void PostAPIMessage(string text, string username = null, string channel = null)
+        public void PostAPIMessage(string text, string channel = null)
         {
             Payload payload = new Payload()
             {
                 //Token = _secrets.Token(),
                 Channel = channel,
-                //Username = username,
                 Text = text,
                 As_User = true
 

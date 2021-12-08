@@ -11,7 +11,6 @@ namespace PokerBot.Repository {
         string GameURL();
         int Balance();
         List<string> GameName();
-        List<string> HOFExclusions();
         string AvatarDir();
         string EventHubConnectionString();
         string EventHubName();

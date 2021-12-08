@@ -14,7 +14,6 @@ namespace PokerBot.Repository {
         public string GameURL { get; set; }
         public List<string> GameNames { get; set; }
         public int Balance { get; set; }
-        public List<string> HOFExclusions { get; set; }
         public string AvatarDir { get; set; }
         public string EventHubConnectionString {get; set;}
         public string EventHubName {get; set;}
@@ -26,7 +25,6 @@ namespace PokerBot.Repository {
             Secret secret = new Secret();
             secret.AvatarDir = Environment.GetEnvironmentVariable("AVATAR_DIR");
             secret.Balance = Int32.Parse(Environment.GetEnvironmentVariable("BALANCE"));
-            secret.HOFExclusions =  Environment.GetEnvironmentVariable("HOF_EXCLUSIONS").Split(',').ToList();
             secret.GameNames =  Environment.GetEnvironmentVariable("GAME_NAMES").Split(',').ToList();
             secret.GameURL = Environment.GetEnvironmentVariable("GAME_URL");
             secret.Password = Environment.GetEnvironmentVariable("PASSWORD");
@@ -75,10 +73,6 @@ namespace PokerBot.Repository {
         public List<string> GameName()
         {
             return _secret.GameNames;
-        }
-        public List<string> HOFExclusions()
-        {
-            return _secret.HOFExclusions;
         }
         public string AvatarDir()
         {
