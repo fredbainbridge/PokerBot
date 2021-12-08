@@ -9,8 +9,6 @@ using Xunit;
 
 namespace PokerBot.Tests.Repository.Slack {
     public class SlackSendMessageTest {
-        private HttpClient httpClient;
-        private ISecrets secrets;
         public SlackSendMessageTest()
         {
             //secrets = MavenTestSetup.GetSecrets();
