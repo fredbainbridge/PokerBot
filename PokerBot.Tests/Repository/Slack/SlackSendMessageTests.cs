@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PokerBot.Models;
 using PokerBot.Repository;
@@ -18,7 +19,8 @@ namespace PokerBot.Tests.Repository.Slack {
         {
             ISecrets secrets = new Secrets();
             HttpClient httpClient = new HttpClient();
-            SlackClient client = new SlackClient(secrets);
+            Mock<ILogger<SlackClient>> logger = new Mock<ILogger<SlackClient>>();
+            SlackClient client = new SlackClient(secrets, httpClient, logger.Object);
             client.PostAPIMessage("test", "U02EGTBLZ5L");
         }
     }

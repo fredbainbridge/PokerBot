@@ -42,6 +42,7 @@ namespace PokerBot
             services.AddHttpClient<IMavenTournamentsPlaying, MavenTournamentsPlaying>();
             services.AddHttpClient<IMavenTournamentsWaiting, MavenTournamentsWaiting>();
             services.AddHttpClient<IMavenTournamentsList, MavenTournamentsList>();
+            services.AddHttpClient<ISlackClient, SlackClient>();
 
             //background services
             services.AddHostedService<ConsumeScopedBalance>();
