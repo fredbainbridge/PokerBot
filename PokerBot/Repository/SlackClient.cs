@@ -8,9 +8,9 @@ using System.Text.Json.Serialization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
+using PokerBot.Repository.EventHub;
 
 //A simple C# class to post messages to a Slack channel
-//Note: This class uses the Newtonsoft Json.NET serializer available via NuGet
 
 namespace PokerBot.Repository {
 	public class SlackClient : ISlackClient
@@ -21,9 +21,11 @@ namespace PokerBot.Repository {
         private ISecrets _secrets;
         private HttpClient _client;
         private readonly ILogger<SlackClient> _logger;
+        private IPokerEventHub _pokerEventHub;
 
-		public SlackClient(ISecrets secrets, HttpClient client, ILogger<SlackClient> logger)
+		public SlackClient(ISecrets secrets, HttpClient client, ILogger<SlackClient> logger, IPokerEventHub pokerEventHub)
 		{
+            _pokerEventHub = pokerEventHub;
             _logger = logger;
             _client = client;
             _token = secrets.Token();
@@ -100,6 +102,8 @@ namespace PokerBot.Repository {
             {
                 var responseMessage = await _client.SendAsync(request);
                 var responseBody = await responseMessage.Content.ReadAsStringAsync();
+                _pokerEventHub.SendEvent(responseBody);
+                _logger.LogInformation(responseBody);
             }
             catch (HttpRequestException e)
             {

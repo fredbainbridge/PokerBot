@@ -7,7 +7,7 @@ using PokerMavensAPI;
 using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;
-
+using PokerBot.Repository.EventHub;
 namespace PokerBot.Tests.Repository.Slack {
     public class SlackSendMessageTest {
         public SlackSendMessageTest()
@@ -20,7 +20,8 @@ namespace PokerBot.Tests.Repository.Slack {
             ISecrets secrets = new Secrets();
             HttpClient httpClient = new HttpClient();
             Mock<ILogger<SlackClient>> logger = new Mock<ILogger<SlackClient>>();
-            SlackClient client = new SlackClient(secrets, httpClient, logger.Object);
+            Mock<IPokerEventHub> eventHob = new Mock<IPokerEventHub>();
+            SlackClient client = new SlackClient(secrets, httpClient, logger.Object, eventHob.Object);
             client.PostAPIMessage("test", "U02EGTBLZ5L");
         }
     }
