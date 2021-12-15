@@ -209,7 +209,7 @@ namespace PokerBot.Controllers
                             {
                                 adminmessage = player + " added " + String.Format("{0:n0}", (changeInt * -1)) + " chips.";
                             }
-                            _pokerEventHub.SendEvent(adminmessage);
+                            _pokerEventHub.SendEvent("Admin Message:" + adminmessage);
                             _logger.LogInformation("(" + System.DateTime.Now.ToString() + ") " + adminmessage);
                             _pokerRepository.SendAdminMessage(adminmessage, source);
                         }

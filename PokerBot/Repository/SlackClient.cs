@@ -102,7 +102,6 @@ namespace PokerBot.Repository {
             {
                 var responseMessage = await _client.SendAsync(request);
                 var responseBody = await responseMessage.Content.ReadAsStringAsync();
-                _pokerEventHub.SendEvent(responseBody);
                 _logger.LogInformation(responseBody);
             }
             catch (HttpRequestException e)
