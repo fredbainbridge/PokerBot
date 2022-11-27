@@ -15,18 +15,18 @@ namespace PokerBot.Repository.EventHub {
             _logger = logger;
         }
         public async void SendEvent(string message) {
-            producerClient = new EventHubProducerClient(_secrets.EventHubConnectionString(), _secrets.EventHubName());
-            using EventDataBatch eventBatch = await producerClient.CreateBatchAsync();
-            if(!eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes(message)))) {
-                throw new Exception("Event is too large for the batch and cannot be sent.");
-            }
-            try {
-                await producerClient.SendAsync(eventBatch);
-                _logger.LogInformation("A batch of events has been published");
-            }
-            finally {
-                await producerClient.DisposeAsync();
-            }
+            // producerClient = new EventHubProducerClient(_secrets.EventHubConnectionString(), _secrets.EventHubName());
+            // using EventDataBatch eventBatch = await producerClient.CreateBatchAsync();
+            // if(!eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes(message)))) {
+            //     throw new Exception("Event is too large for the batch and cannot be sent.");
+            // }
+            // try {
+            //     await producerClient.SendAsync(eventBatch);
+            //     _logger.LogInformation("A batch of events has been published");
+            // }
+            // finally {
+            //     await producerClient.DisposeAsync();
+            // }
         }
     }
 }
