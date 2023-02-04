@@ -57,7 +57,7 @@ namespace PokerBot.Controllers
             UserBalance balance = _pokerContext.UserBalance.Where(b => b.UserID == u.ID).FirstOrDefault();
             var sessions = _pokerRepo.UpdateBalances();
             _logger.LogInformation(u.RealName + " has requested their balance."); 
-            _pokerEventHub.SendEvent(u.RealName + " has requested their balance.");
+            //_pokerEventHub.SendEvent(u.RealName + " has requested their balance.");
             if (sessions == null)
             {
                 string gameOnText = "There is a game going on so your balance may not be accurate.";

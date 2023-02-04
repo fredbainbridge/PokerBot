@@ -9,12 +9,12 @@ namespace PokerBot.Repository.EventHub {
     public class PokerEventHub : IPokerEventHub {
         private ISecrets _secrets;
         private readonly ILogger<PokerEventHub> _logger;
-        static EventHubProducerClient producerClient;
+        //static EventHubProducerClient producerClient;
         public PokerEventHub(ISecrets secrets, ILogger<PokerEventHub> logger) {
             _secrets = secrets;
             _logger = logger;
         }
-        public async void SendEvent(string message) {
+        //public async void SendEvent(string message) {
             // producerClient = new EventHubProducerClient(_secrets.EventHubConnectionString(), _secrets.EventHubName());
             // using EventDataBatch eventBatch = await producerClient.CreateBatchAsync();
             // if(!eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes(message)))) {
@@ -27,6 +27,6 @@ namespace PokerBot.Repository.EventHub {
             // finally {
             //     await producerClient.DisposeAsync();
             // }
-        }
+        //}
     }
 }

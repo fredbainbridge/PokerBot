@@ -84,7 +84,7 @@ namespace PokerBot.Controllers
 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + $" has left {TableName}. " + remainingSeatsMsg;
-                _pokerEventHub.SendEvent(message);
+                //_pokerEventHub.SendEvent(message);
                 _gameState.RemovePlayer(PlayerName);
             }
             if(Form["Event"] == "RingGameJoin") {
@@ -101,7 +101,7 @@ namespace PokerBot.Controllers
                 
                 string remainingSeatsMsg = _pokerRepository.RemainingSeatsMessage(TableName);
                 message = PlayerName + " has sat down with $" + Amount + $" at {TableName}! " + remainingSeatsMsg + gameUrl;
-                _pokerEventHub.SendEvent(message);
+                //_pokerEventHub.SendEvent(message);
                 if(remainingSeats.Equals("There are 6 seats remaining. "))
                 {
                     _pokerRepository.SendAdminMessage("We have 4 players, now is a good time to click your Straddle button!", TableName);
@@ -123,7 +123,7 @@ namespace PokerBot.Controllers
                 {
                     if(!_gameState.GetLastMessage().Equals($"A game has started at {TableName}! " + gameUrl)) {
                         message = $"A game has started at {TableName}! " + gameUrl;
-                        _pokerEventHub.SendEvent(message);
+                        //_pokerEventHub.SendEvent(message);
                         _gameState.SetLastGameStartAlert();
                     }
                 }
@@ -169,11 +169,11 @@ namespace PokerBot.Controllers
                 {
                     string amount = String.Format("{0:n0}", hand.WinningAmount);
                     message = hand.Winner.UserName + " just won a " + type + $" pot at {TableName}! (" + amount + ") " + handURL;
-                    _pokerEventHub.SendEvent(message);
+                    //_pokerEventHub.SendEvent(message);
                 }
                 if(_pokerRepository.IsHOF(hand))
                 {
-                    _pokerEventHub.SendEvent("We have a new Hall of Fame pot! " + handURL);
+                    //_pokerEventHub.SendEvent("We have a new Hall of Fame pot! " + handURL);
                     if (!_secrets.Silence())
                     {
                         _slackClient.PostWebhookMessage(
@@ -209,7 +209,7 @@ namespace PokerBot.Controllers
                             {
                                 adminmessage = player + " added " + String.Format("{0:n0}", (changeInt * -1)) + " chips.";
                             }
-                            _pokerEventHub.SendEvent("Admin Message:" + adminmessage);
+                            //_pokerEventHub.SendEvent("Admin Message:" + adminmessage);
                             _logger.LogInformation("(" + System.DateTime.Now.ToString() + ") " + adminmessage);
                             _pokerRepository.SendAdminMessage(adminmessage, source);
                         }
@@ -226,7 +226,7 @@ namespace PokerBot.Controllers
                 {
                     _pokerRepository.SendAdminMessage(player + " has logged in.", t.Name);
                 }
-                _pokerEventHub.SendEvent(player + " has logged in.");
+                //_pokerEventHub.SendEvent(player + " has logged in.");
                 
                 //update the table state with the new balanaces.
             }
@@ -237,7 +237,7 @@ namespace PokerBot.Controllers
                 var player = Form["Player"];
                 message = $"{player} has registered for {name}!";
                 _pokerRepository.SendMessageToAllRingGames(message);
-                _pokerEventHub.SendEvent(message);
+                //_pokerEventHub.SendEvent(message);
             }
             if (Form["Event"] == "TourneyUnregister")
             {
@@ -245,14 +245,14 @@ namespace PokerBot.Controllers
                 var player = Form["Player"];
                 message = $"{player} has unregistered for {name}!";
                 _pokerRepository.SendMessageToAllRingGames(message);
-                _pokerEventHub.SendEvent(message);
+                //_pokerEventHub.SendEvent(message);
             }
             if (Form["Event"] == "TourneyStart")
             {
                 string name = Form["Name"];
                 message = $"{name} has started!";
                 _pokerRepository.SendMessageToAllRingGames(message);
-                _pokerEventHub.SendEvent(message);
+                //_pokerEventHub.SendEvent(message);
             }
             if (!string.IsNullOrEmpty(message)) {
                 _logger.LogInformation("(" + System.DateTime.Now.ToString() + ") " + message);
